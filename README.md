@@ -1,6 +1,6 @@
 <div align="center">
 
-# OpenCode CrewKit
+# OpenCode PawCrew
 
 **Enterprise-grade agent crew for [OpenCode](https://opencode.ai)**
 
@@ -17,11 +17,27 @@ Controlled autonomy for software engineering teams. Clear ownership. Audit-ready
 
 ---
 
+
+## Table of contents
+
+- [Story](#story)
+- [Why PawCrew](#why-pawcrew)
+- [Status](#status)
+- [The Crew](#the-crew)
+- [Quick start](#quick-start)
+- [Tooling layer](#tooling-layer)
+- [Skills](#skills)
+- [PDCA loop](#pdca-loop)
+- [Design principles](#design-principles)
+- [Flows in action](#flows-in-action)
+- [Credits](#credits)
+- [License](#license)
+
 ## Story
 
 Most AI coding assistants today are either too cautious — asking for permission on every line — or too reckless — editing production code, skipping tests, and leaving the codebase inconsistent with its own documentation.
 
-CrewKit was built for teams that need a third way: **agents that act with bounded autonomy**, where every important decision is visible, every change is verified, and every session leaves the project knowledge corpus stronger.
+PawCrew was built for teams that need a third way: **agents that act with bounded autonomy**, where every important decision is visible, every change is verified, and every session leaves the project knowledge corpus stronger.
 
 It started as a set of custom OpenCode agents for maintainers who were tired of:
 - Models that confuse "investigate" with "implement".
@@ -29,9 +45,9 @@ It started as a set of custom OpenCode agents for maintainers who were tired of:
 - Plans that look good but are never compared against what actually shipped.
 - Docs that drift from code the moment the chat ends.
 
-CrewKit treats these as design problems, not prompt-engineering hacks. The result is a small crew of agents with explicit authority boundaries, deterministic plugins for knowledge governance, and a PDCA loop that makes work auditable by default.
+PawCrew treats these as design problems, not prompt-engineering hacks. The result is a small crew of agents with explicit authority boundaries, deterministic plugins for knowledge governance, and a PDCA loop that makes work auditable by default.
 
-## Why CrewKit
+## Why PawCrew
 
 - **Role clarity over role explosion** — four primary agents, five specialists, each with one job, one approval policy, and one completion contract. No agent-of-agents. No hidden runtime.
 - **Native OpenCode** — agents, commands, skills, and permissions live in standard OpenCode config. No scheduler, no router, no custom orchestration layer to maintain.
@@ -44,7 +60,7 @@ CrewKit treats these as design problems, not prompt-engineering hacks. The resul
 
 **Beta · production-ready for experienced teams.**
 
-CrewKit is actively used for real software engineering work on macOS and Linux with [OpenCode](https://opencode.ai) and the [Superpowers](https://github.com/obra/superpowers) plugin. The agent architecture, knowledge model, and PDCA workflow are stable. Prompt-level refinements and new skills land frequently, so pin a commit if you need reproducible behavior.
+PawCrew is actively used for real software engineering work on macOS and Linux with [OpenCode](https://opencode.ai) and the [Superpowers](https://github.com/obra/superpowers) plugin. The agent architecture, knowledge model, and PDCA workflow are stable. Prompt-level refinements and new skills land frequently, so pin a commit if you need reproducible behavior.
 
 - Windows support is untested.
 - Breaking changes between releases are expected while the kit stabilizes.
@@ -298,7 +314,7 @@ review flow.
 
 ## PDCA loop
 
-CrewKit follows the Deming cycle for non-trivial work:
+PawCrew follows the Deming cycle for non-trivial work:
 
 - **Plan** — `pawbuilder` and `patchpaw` persist a Plan Record before user approval;
   `letmeowcook` creates one autonomously during Understand/Decide.

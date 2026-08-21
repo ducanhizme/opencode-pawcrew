@@ -1,4 +1,4 @@
-# OpenCode CrewKit
+# OpenCode PawCrew
 
 A minimal, native-first agent system for OpenCode: four primary agents
 (PawBuilder, PatchPaw, LetMeowCook, LoreCat), five intelligence subagents
