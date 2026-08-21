@@ -6,6 +6,8 @@
 
 Controlled autonomy for software engineering teams. Clear ownership. Audit-ready decisions. Knowledge that survives the session.
 
+![PawCrew banner](images/banners.png)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-2ea44f.svg)](LICENSE)
 [![OpenCode](https://img.shields.io/badge/for-OpenCode-8A2BE2.svg)](https://opencode.ai)
 [![Superpowers](https://img.shields.io/badge/process-Superpowers-FF6B35.svg)](https://github.com/obra/superpowers)
