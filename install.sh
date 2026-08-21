@@ -2,41 +2,124 @@
 # Install the agent kit into ~/.config/opencode/ via per-file symlinks.
 # Idempotent: existing symlinks are re-pointed to this repo.
 # --force: replace conflicting regular files (after confirmation).
+# --project <path>: overlay PawCrew into an existing project's .opencode/ directory.
 
 set -euo pipefail
 
 KIT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$KIT_DIR/.opencode"
-DEST="${HOME}/.config/opencode"
-FORCE="${1:-}"
+
+MODE="global"
+PROJECT_DIR=""
+FORCE_FLAG=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --project)
+      MODE="project"
+      PROJECT_DIR="${2:-}"
+      if [[ -z "$PROJECT_DIR" ]]; then
+        echo "ERROR: --project requires a path."
+        exit 1
+      fi
+      shift 2
+      ;;
+    --force)
+      FORCE_FLAG="--force"
+      shift
+      ;;
+    -h|--help)
+      cat <<'EOF'
+Usage: ./install.sh [OPTIONS]
+
+Options:
+  --project PATH   Overlay PawCrew agents/commands/skills/plugins into
+                   PATH/.opencode/ (project-local). Use this when the repo
+                   already has its own OpenCode config or custom skills.
+  --force          Replace conflicting regular files (dangerous — backs up
+                   originals in project mode).
+  -h, --help       Show this help.
+
+Examples:
+  ./install.sh
+  ./install.sh --project ./my-existing-project
+  ./install.sh --project ./my-existing-project --force
+EOF
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1"
+      echo "Use -h or --help for usage."
+      exit 1
+      ;;
+  esac
+done
+
+if [[ "$MODE" == "project" ]]; then
+  PROJECT_DIR="$(cd "$PROJECT_DIR" 2>/dev/null && pwd || echo "$PROJECT_DIR")"
+  if [[ ! -d "$PROJECT_DIR" ]]; then
+    echo "ERROR: project directory does not exist: $PROJECT_DIR"
+    exit 1
+  fi
+  DEST="$PROJECT_DIR/.opencode"
+else
+  DEST="${HOME}/.config/opencode"
+fi
 
 created=0
 updated=0
 conflicts=0
 skipped=0
 
-link_one() {
+# In global mode we use symlinks so kit updates propagate automatically.
+# In project mode we copy files so the repo remains portable and can be
+# customized without affecting the global kit.
+link_or_copy() {
   local src="$1" dst="$2"
   local action=""
-  if [[ -L "$dst" ]]; then
-    action="update"
-  elif [[ -e "$dst" ]]; then
-    if [[ "$FORCE" == "--force" ]]; then
+  if [[ "$MODE" == "project" ]]; then
+    if [[ -L "$dst" ]]; then
+      # Replace a symlink with a real file copy so the project owns it.
       rm "$dst"
-      action="replace"
+      cp "$src" "$dst"
+      action="replace-copy"
+    elif [[ -e "$dst" ]]; then
+      if [[ "$FORCE_FLAG" == "--force" ]]; then
+        cp -a "$dst" "$dst.crewkit-backup.$(date +%s)"
+        cp "$src" "$dst"
+        action="replace"
+      else
+        echo "CONFLICT (project): $dst exists. Use --force to replace (backup created)."
+        conflicts=$((conflicts + 1))
+        return
+      fi
     else
-      echo "CONFLICT: $dst exists (regular file). Use --force to replace."
-      conflicts=$((conflicts + 1))
-      return
+      mkdir -p "$(dirname "$dst")"
+      cp "$src" "$dst"
+      action="create"
     fi
   else
-    action="create"
+    if [[ -L "$dst" ]]; then
+      action="update"
+    elif [[ -e "$dst" ]]; then
+      if [[ "$FORCE_FLAG" == "--force" ]]; then
+        rm "$dst"
+        action="replace"
+      else
+        echo "CONFLICT: $dst exists (regular file). Use --force to replace."
+        conflicts=$((conflicts + 1))
+        return
+      fi
+    else
+      action="create"
+    fi
+    ln -sfn "$src" "$dst"
   fi
-  ln -sfn "$src" "$dst"
   case "$action" in
-    create)  created=$((created + 1));;
-    update)  updated=$((updated + 1));;
-    replace) created=$((created + 1));;
+    create)        created=$((created + 1));;
+    update)        updated=$((updated + 1));;
+    replace-copy)  created=$((created + 1));;
+    replace)       created=$((created + 1));;
   esac
 }
 
@@ -66,6 +149,29 @@ append_global_rules() {
     { printf '\n%s\n\n' "$begin"; cat "$rules"; printf '\n%s\n' "$end"; } >> "$dst"
     echo "Global rules: appended managed block to $dst"
   fi
+}
+
+write_project_overlay_note() {
+  [[ "$MODE" != "project" ]] && return
+  local note="$DEST/.crewkit-overlay.md"
+  cat > "$note" <<EOF
+# PawCrew Project Overlay
+
+This directory was populated by PawCrew via `./install.sh --project $PROJECT_DIR`.
+
+- Agents, commands, skills, and plugins from PawCrew have been copied here.
+- Existing files were preserved unless `--force` was used.
+- Custom project-specific files are safe to add alongside them.
+- Global mode uses symlinks in \`~/.config/opencode/\`; project mode uses copies so the repo remains portable.
+
+If you want to refresh the overlay later, re-run:
+
+```bash
+$KIT_DIR/install.sh --project $PROJECT_DIR
+```
+EOF
+  created=$((created + 1))
+  echo "Project overlay note: $note"
 }
 
 check_ast_grep() {
@@ -127,6 +233,20 @@ check_lorecat_plugin() {
   fi
 }
 
+check_openwiki() {
+  local local_bin="$KIT_DIR/node_modules/.bin/openwiki"
+  echo
+  if [[ -x "$local_bin" ]]; then
+    echo "OpenWiki: installed locally at $local_bin."
+  elif command -v openwiki >/dev/null 2>&1; then
+    echo "OpenWiki: available globally ($(command -v openwiki))."
+  else
+    echo "OpenWiki: not found."
+    echo "         LoreCat will use its native fallback for generation/update/validation."
+    echo "         To enable OpenWiki: npm install openwiki  (or run npm install in $KIT_DIR)"
+  fi
+}
+
 check_superpowers() {
   local cfg_found=0 cache_found=0 cfg
   for cfg in "$DEST/opencode.json" "$DEST/opencode.jsonc"; do
@@ -150,36 +270,6 @@ check_superpowers() {
     echo "         Fix: add \"plugin\": [\"superpowers@git+https://github.com/obra/superpowers.git\"]"
   fi
 }
-
-mkdir -p "$DEST/agent" "$DEST/command" "$DEST/skills"
-
-for f in "$SRC"/agent/*.md; do
-  link_one "$f" "$DEST/agent/$(basename "$f")"
-done
-
-# refs/ directory removed — flows + delegation moved to skills (.opencode/skills/*/SKILL.md),
-# auto-symlinked by the skill loop below. Clean up a stale $DEST/refs symlink from prior installs.
-if [[ -L "$DEST/refs" ]]; then
-  rm "$DEST/refs"
-  echo "Cleanup: removed stale symlink $DEST/refs (refs/ moved to skills/)."
-fi
-
-for f in "$SRC"/command/*.md; do
-  link_one "$f" "$DEST/command/$(basename "$f")"
-done
-
-for d in "$SRC"/skills/*/; do
-  name="$(basename "$d")"
-  [[ -f "$d/SKILL.md" ]] || continue
-  mkdir -p "$DEST/skills/$name"
-  link_one "$d/SKILL.md" "$DEST/skills/$name/SKILL.md"
-done
-
-for f in "$SRC"/plugin/*.ts; do
-  [[ -f "$f" ]] || continue
-  mkdir -p "$DEST/plugin"
-  link_one "$f" "$DEST/plugin/$(basename "$f")"
-done
 
 check_superpowers_gate() {
   local linked=yes configured=no cfg cached
@@ -207,15 +297,50 @@ check_superpowers_gate() {
   done
 }
 
+mkdir -p "$DEST/agent" "$DEST/command" "$DEST/skills"
+
+for f in "$SRC"/agent/*.md; do
+  link_or_copy "$f" "$DEST/agent/$(basename "$f")"
+done
+
+# refs/ directory removed — flows + delegation moved to skills (.opencode/skills/*/SKILL.md),
+# auto-symlinked by the skill loop below. Clean up a stale $DEST/refs symlink from prior installs.
+if [[ -L "$DEST/refs" ]]; then
+  rm "$DEST/refs"
+  echo "Cleanup: removed stale symlink $DEST/refs (refs/ moved to skills/)."
+fi
+
+for f in "$SRC"/command/*.md; do
+  link_or_copy "$f" "$DEST/command/$(basename "$f")"
+done
+
+for d in "$SRC"/skills/*/; do
+  name="$(basename "$d")"
+  [[ -f "$d/SKILL.md" ]] || continue
+  mkdir -p "$DEST/skills/$name"
+  link_or_copy "$d/SKILL.md" "$DEST/skills/$name/SKILL.md"
+done
+
+for f in "$SRC"/plugin/*.ts; do
+  [[ -f "$f" ]] || continue
+  mkdir -p "$DEST/plugin"
+  link_or_copy "$f" "$DEST/plugin/$(basename "$f")"
+done
+
+[[ "$MODE" == "project" ]] && write_project_overlay_note
+
 check_superpowers
 check_superpowers_gate
 check_ast_grep
 check_mcp
 check_lorecat_plugin
+check_openwiki
 append_global_rules
 
 echo
 echo "Installed from: $KIT_DIR"
+echo "  mode:             $MODE"
+[[ "$MODE" == "project" ]] && echo "  project:          $PROJECT_DIR"
 echo "  created/replaced: $created"
 echo "  updated symlinks: $updated"
 echo "  conflicts:        $conflicts"

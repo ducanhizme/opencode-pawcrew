@@ -57,12 +57,14 @@ Documents states you may report: `VERIFIED / LIKELY_FRESH / STALE / CONFLICT / U
 
 ## Tools
 
-- `wiki_search` — search only `.ai/docs/**`
+The `lore-cat.ts` plugin provides six deterministic wiki tools. Internally they delegate generation, update, and validation to **OpenWiki** when it is installed in the project (`openwiki` npm dependency). PawCrew-specific behavior (freshness via `x_wikiguy.verified_commit + covers`, OKF v0.2, and reconciliation modes) is preserved regardless of whether OpenWiki is invoked.
+
+- `wiki_search` — search `.ai/docs/**` (OpenWiki preferred; local substring fallback)
 - `wiki_read` — frontmatter + body + git metadata
 - `wiki_freshness` — deterministic Git drift check (`verified_commit` + `covers`): empty diff → `LIKELY_FRESH`; changed paths → `STALE_CANDIDATES` (then semantic verification is still needed)
-- `wiki_save_concept` — the ONLY sanctioned write path (atomic, preserves unknown OKF fields, refreshes provenance)
-- `wiki_validate` — OKF structure, links, index, log
-- `wiki_sync` — regenerate `index.md`, append `log.md`; no-ops silently when nothing changed
+- `wiki_save_concept` — the ONLY sanctioned write path (atomic, preserves unknown OKF fields, refreshes provenance; optionally drafts body via OpenWiki)
+- `wiki_validate` — OKF v0.2 structure, links, index, log (OpenWiki preferred; native validator fallback)
+- `wiki_sync` — regenerate `index.md`, append `log.md`; no-ops silently when nothing changed (OpenWiki preferred; native sync fallback)
 
 Freshness uses Git commit history, never filesystem mtime. Git recency is evidence for freshness, **not authority** — newer implementation does not automatically override accepted project knowledge.
 

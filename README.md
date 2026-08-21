@@ -54,7 +54,7 @@ PawCrew treats these as design problems, not prompt-engineering hacks. The resul
 - **Role clarity over role explosion** — four primary agents, five specialists, each with one job, one approval policy, and one completion contract. No agent-of-agents. No hidden runtime.
 - **Native OpenCode** — agents, commands, skills, and permissions live in standard OpenCode config. No scheduler, no router, no custom orchestration layer to maintain.
 - **Approval at the right gates** — PawBuilder stops at material design decisions, PatchPaw stops before the diff, LetMeowCook runs autonomously and reports at the end.
-- **Deterministic knowledge governance** — LoreCat owns `.ai/docs` as the project truth corpus, with drift detection, source-of-truth reconciliation, and sanctioned write paths.
+- **OpenWiki-backed knowledge governance** — LoreCat owns `.ai/docs` as the project truth corpus. Generation, update, and validation delegate to OpenWiki when installed; drift detection, source-of-truth reconciliation, and sanctioned write paths remain deterministic PawCrew behavior.
 - **Verification-first completion** — no task is "done" without fresh evidence: tests, type checks, builds, and a Check Record against observable success criteria.
 - **Continuous improvement loop** — the `pdca-loop` and `retrospective` skills convert every completed task into feedback for the kit itself.
 
@@ -242,22 +242,36 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
 
 ## Quick start
 
+### Global install (recommended for a single machine)
+
 ```bash
 git clone https://github.com/duwscan/opencode-crewkit.git
 cd opencode-crewkit
+npm install          # installs OpenWiki for LoreCat knowledge generation
 ./install.sh
 ```
 
 `install.sh` is idempotent: it symlinks agents, commands, and skills into
 `~/.config/opencode/` (available in **every project**) and pre-flights your
-environment:
+environment. If `npm install` was skipped, LoreCat falls back to its native
+knowledge tools.
 
+### Project-local install (recommended for shared or existing projects)
+
+If the project already has its own OpenCode agents, skills, or plugin config,
+overlay PawCrew into the repo itself so the crew travels with the project and
+never overwrites the team's customizations by accident:
+
+```bash
+./install.sh --project ./my-existing-project
 ```
-✓ Superpowers plugin configured and cached
-✓ AST-Grep working (ast-grep 0.42.1)
-✓ Context7 MCP configured
-△ Exa MCP — set EXA_API_KEY to enable
-```
+
+Behavior:
+
+- Agents, commands, skills, and plugins are **copied** into `my-existing-project/.opencode/`.
+- Existing project files are preserved unless you pass `--force` (a backup is created).
+- The resulting `.opencode/` is portable: clone the repo on another machine and the crew is already there.
+- A `.crewkit-overlay.md` note is written so the team knows where the files came from.
 
 Then **restart opencode** (config is not hot-reloaded) and pick your entry point:
 
@@ -302,6 +316,7 @@ a hard block on `sg --update-all` (no rewrites from a read-only investigator).
 | [`contract-regression-testing`](.opencode/skills/contract-regression-testing/SKILL.md) | analysis | API/schema/event/serialization/config/CLI compatibility matrix and concrete regression checks before approval |
 | [`bug-flow`](.opencode/skills/bug-flow/SKILL.md) | process | Root-cause-first fix procedure with pre-approval contract and post-approval TDD |
 | [`change-request-flow`](.opencode/skills/change-request-flow/SKILL.md) | process | Impact-analysis-first procedure for bounded behavior/API changes with mandatory knowledge sync |
+| [`crewkit-skill-registry`](.opencode/skills/crewkit-skill-registry/SKILL.md) | tooling | Discover all available skills: project-local, global user, plugin-shipped, and kit skills |
 | [`delegation-policy`](.opencode/skills/delegation-policy/SKILL.md) | policy | Canonical subagent dispatch targets, review dispatch rules, and dispatch mechanics |
 | [`pdca-loop`](.opencode/skills/pdca-loop/SKILL.md) | process | Deming PDCA loop: Plan Record → Run Log → Check Record → Knowledge Sync + Retrospective |
 | [`retrospective`](.opencode/skills/retrospective/SKILL.md) | process | Extract process lessons and propose kit improvements after completed tasks |
@@ -574,9 +589,10 @@ You:   approved, fix both findings.
   and Oracle prompts. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 - **[Superpowers](https://github.com/obra/superpowers)** — the process engine
   (brainstorming, planning, TDD, review, verification skills).
-- **[OpenWiki](https://github.com/google/openwiki)** — OKF lifecycle, docs-only
-  write guard, index synchronization, and no-op change detection concepts
-  behind LoreCat's knowledge runtime.
+- **[OpenWiki](https://github.com/langchain-ai/openwiki)** — OKF v0.2 generation, index
+  synchronization, link validation, and no-op change detection. PawCrew delegates
+  OpenWiki's CLI for generation/update/validation while preserving its own
+  `x_wikiguy` freshness and reconciliation semantics.
 - **[OpenCode](https://opencode.ai)** — the harness this is native to.
 
 ## License

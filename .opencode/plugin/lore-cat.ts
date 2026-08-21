@@ -1,10 +1,13 @@
-// lore-cat.ts — deterministic knowledge-management tools for the LoreCat agent.
+// lore-cat.ts — knowledge-management tools for the LoreCat agent.
+// OpenWiki-backed facade: delegates generation/update/validation to the
+// openwiki CLI when available, and preserves PawCrew-specific behavior
+// (freshness via x_wikiguy.verified_commit + covers, reconciliation modes,
+// OKF frontmatter with x_wikiguy block).
 // Operates ONLY on <project>/.ai/docs/**. Git usage is read-only.
-// Auto-discovered as a global plugin via ~/.config/opencode/plugin/lore-cat.ts
 
 import * as fs from "node:fs"
 import * as path from "node:path"
-import { execSync } from "node:child_process"
+import { execSync, spawnSync } from "node:child_process"
 import { z } from "zod"
 
 type Res = { title: string; output: string }
@@ -18,6 +21,73 @@ function docsRoot(root: string): string {
   return path.join(root, ".ai", "docs")
 }
 
+function openwikiPath(root: string): string {
+  const local = path.join(root, "node_modules", ".bin", "openwiki")
+  if (fs.existsSync(local)) return local
+  return "openwiki"
+}
+
+function openwikiAvailable(root: string): boolean {
+  try {
+    const bin = openwikiPath(root)
+    execSync(`"${bin}" --help`, { cwd: root, stdio: "ignore" })
+    return true
+  } catch {
+    return false
+  }
+}
+
+/** True only when OpenWiki is both installed and able to run (API key configured). */
+function openwikiUsable(root: string): boolean {
+  if (!openwikiAvailable(root)) return false
+  const res = runOpenWiki(root, ["--print", "hello"])
+  // A usable run either succeeds or fails on something other than authentication.
+  const authFail = /Invalid API key|MODEL_AUTHENTICATION|no API key|OPENAI_API_KEY|LANGCHAIN_API_KEY/i.test(res.stderr + res.stdout)
+  return res.ok || !authFail
+}
+
+function runOpenWiki(root: string, args: string[], input?: string): { ok: boolean; stdout: string; stderr: string } {
+  const bin = openwikiPath(root)
+  const env = { ...process.env, OPENWIKI_TELEMETRY_DISABLED: "1", DO_NOT_TRACK: "1" }
+  const result = spawnSync(bin, args, { cwd: root, env, input, encoding: "utf8" })
+  return {
+    ok: result.status === 0,
+    stdout: result.stdout || "",
+    stderr: result.stderr || "",
+  }
+}
+
+function mergeOpenWikiOutput(root: string) {
+  const openwikiDir = path.join(root, "openwiki")
+  const aiDocsDir = docsRoot(root)
+  if (!fs.existsSync(openwikiDir) || !fs.existsSync(aiDocsDir)) return 0
+  let copied = 0
+  for (const src of walkMd(openwikiDir)) {
+    const rel = path.relative(openwikiDir, src)
+    const dst = path.join(aiDocsDir, rel)
+    fs.mkdirSync(path.dirname(dst), { recursive: true })
+    const generated = fs.readFileSync(src, "utf8")
+    const merged = mergeWithExisting(dst, generated)
+    fs.writeFileSync(dst, merged)
+    copied++
+  }
+  return copied
+}
+
+function mergeWithExisting(dst: string, generatedContent: string): string {
+  if (!fs.existsSync(dst)) return generatedContent
+  const existing = fs.readFileSync(dst, "utf8")
+  const existingFm = splitFrontmatter(existing)
+  const generatedFm = splitFrontmatter(generatedContent)
+  if (existingFm.fm && generatedFm.fm && !generatedFm.fm.includes("x_wikiguy:")) {
+    const xWikiMatch = existingFm.fm.match(/x_wikiguy:[\s\S]*?(?=\n[A-Za-z_][\w-]*:|\n---|$)/)
+    if (xWikiMatch) {
+      generatedFm.fm = generatedFm.fm.trimEnd() + "\n" + xWikiMatch[0]
+    }
+  }
+  return `---\n${generatedFm.fm}\n---\n\n${generatedFm.body.trim()}\n`
+}
+
 function git(root: string, cmd: string): string | null {
   try {
     return execSync(cmd, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim()
@@ -29,7 +99,6 @@ function git(root: string, cmd: string): string | null {
 function insideDocs(root: string, p: string): string | null {
   const docs = docsRoot(root)
   const cleaned = p.replace(/^\.?\//, "")
-  // Accept both ".ai/docs/<rest>" (project-root-relative) and "<rest>" (docs-relative).
   const resolved = cleaned.startsWith(".ai/docs/") || cleaned.startsWith(`.ai${path.sep}docs${path.sep}`)
     ? path.resolve(root, cleaned)
     : path.resolve(docs, cleaned)
@@ -41,13 +110,16 @@ function isFile(p: string): boolean {
   try { return fs.statSync(p).isFile() } catch { return false }
 }
 
-function splitFrontmatterFile(file: string): { fm: string; body: string } {
-  const txt = fs.readFileSync(file, "utf8")
-  const m = txt.match(/^\uFEFF?---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
-  return m ? { fm: m[1], body: m[2] } : { fm: "", body: txt }
+function splitFrontmatter(text: string): { fm: string; body: string } {
+  const m = text.match(/^\uFEFF?---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/)
+  return m ? { fm: m[1], body: m[2] } : { fm: "", body: text }
 }
 
-/** Split YAML text into top-level key -> raw block (key line + nested lines). */
+function splitFrontmatterFile(file: string): { fm: string; body: string } {
+  if (!isFile(file)) return { fm: "", body: "" }
+  return splitFrontmatter(fs.readFileSync(file, "utf8"))
+}
+
 function topBlocks(fm: string): Map<string, string> {
   const blocks = new Map<string, string>()
   const lines = fm.split(/\r?\n/)
@@ -73,7 +145,6 @@ function walkMd(dir: string, out: string[] = []): string[] {
   return out
 }
 
-/** Extract the x_wikiguy nested block: returns its inner lines. */
 function xWikiBlock(fm: string): string[] | null {
   const lines = fm.split(/\r?\n/)
   const start = lines.findIndex((l) => /^x_wikiguy:\s*$/.test(l))
@@ -120,6 +191,26 @@ export default (input: any) => {
             }
           }
           if (!q) return { title: "wiki_search", output: "error: query is required" }
+
+          // Prefer OpenWiki search if available; otherwise fall back to local grep scan.
+          if (openwikiUsable(root)) {
+            const res = runOpenWiki(root, ["--print", `search wiki for "${q}" and return JSON results`])
+            if (res.ok) {
+              try {
+                const data = JSON.parse(res.stdout)
+                const hits = (Array.isArray(data) ? data : data?.results ?? []).slice(0, limit)
+                if (hits.length) {
+                  return {
+                    title: `wiki_search: ${q}${kind ? ` (${kind})` : ""}`,
+                    output: `${hits.length} match(es) from OpenWiki:\n` + hits.map((h: any) => `- ${h.path ?? h.file}: ${h.title ?? ""}`).join("\n"),
+                  }
+                }
+              } catch {
+                // fall through to local scan
+              }
+            }
+          }
+
           const hits: string[] = []
           for (const f of walkMd(docs)) {
             const { fm } = splitFrontmatterFile(f)
@@ -234,12 +325,14 @@ export default (input: any) => {
         description:
           "The ONLY sanctioned write path into .ai/docs. Saves one OKF Markdown document atomically: enforces path stays inside .ai/docs, " +
           "preserves unknown top-level OKF fields from the existing file, refreshes generated provenance (by: lorecat, date), validates the result. " +
+          "When OpenWiki is installed, it is invoked to generate/update the document first, then PawCrew-specific metadata (x_wikiguy) is merged back. " +
           "Call only when the owning workflow has authorized the write (direct reconciliation, approved plan, or /lore-cat-save-it).",
         args: {
           path: z.string().describe("destination path inside .ai/docs"),
           frontmatter_yaml: z.string().describe("complete OKF frontmatter YAML (must include type; include x_wikiguy block with knowledge_kind/authority/verified_commit/covers as applicable)"),
           body: z.string().optional().describe("markdown body; omit to keep the existing body when updating"),
           preserve_unknown: z.boolean().optional().describe("preserve unknown top-level OKF fields from existing file (default true)"),
+          openwiki_prompt: z.string().optional().describe("optional natural-language prompt for OpenWiki generation when creating a new concept"),
         },
         execute: async (args: any, ctx: any): Promise<Res> => {
           const root = rootOf(ctx)
@@ -262,22 +355,33 @@ export default (input: any) => {
             }
           }
 
+          let generatedBody = args?.body !== undefined ? String(args.body).trim() : existed ? splitFrontmatterFile(p).body.trim() : ""
+
+          // If OpenWiki is available and we are creating a new concept, let OpenWiki draft the body.
+          if (openwikiUsable(root) && !existed && args?.openwiki_prompt) {
+            const owResult = runOpenWiki(root, ["--print", args.openwiki_prompt])
+            if (owResult.ok) {
+              const merged = mergeWithExisting(p, owResult.stdout)
+              const split = splitFrontmatter(merged)
+              if (split.body.trim()) generatedBody = split.body.trim()
+            }
+          }
+
           // Assemble final frontmatter: unknown-preserved keys first, then new blocks (ordered), then refreshed generated.
           const blocks = topBlocks(fmNew)
           blocks.delete("generated")
           const order = ["type", "title", "description", "status", "tags", "sources", "verified", "x_wikiguy"]
           const parts: string[] = []
-          for (const k of keptKeys) parts.push(oldBlock(root, p, k)!)
+          for (const k of keptKeys) parts.push(oldBlock(p, k)!)
           for (const k of order) if (blocks.has(k)) parts.push(blocks.get(k)!)
           for (const [k, v] of blocks) if (!order.includes(k)) parts.push(v)
-          const now = new Date().toISOString().slice(0, 10)
-          parts.push(["generated:", "  by: lorecat", `  date: ${now}`].join("\n"))
+          const now = new Date().toISOString()
+          parts.push(["generated:", "  by: lorecat", `  at: ${now}`].join("\n"))
           const finalFm = parts.filter(Boolean).join("\n")
 
-          const body = args?.body !== undefined ? String(args.body).trim() : existed ? splitFrontmatterFile(p).body.trim() : ""
           fs.mkdirSync(path.dirname(p), { recursive: true })
           const tmp = p + ".lorecat.tmp"
-          fs.writeFileSync(tmp, `---\n${finalFm}\n---\n\n${body}\n`)
+          fs.writeFileSync(tmp, `---\n${finalFm}\n---\n\n${generatedBody}\n`)
           fs.renameSync(tmp, p)
 
           const chk = splitFrontmatterFile(p)
@@ -286,6 +390,12 @@ export default (input: any) => {
           if (/authority:\s*normative/.test(chk.fm) && !/verified_commit:/.test(chk.fm)) {
             warnings.push("normative document saved WITHOUT verified_commit — verify via Sherclaw and re-save with x_wikiguy.verified_commit")
           }
+
+          // Sync OpenWiki-generated metadata (e.g., .last-update.json) into .ai/docs if present.
+          if (openwikiAvailable(root)) {
+            mergeOpenWikiOutput(root)
+          }
+
           return {
             title: `wiki_save_concept: ${rel}`,
             output: [
@@ -301,17 +411,35 @@ export default (input: any) => {
       wiki_validate: {
         description:
           "Validate the .ai/docs corpus: YAML frontmatter present, required type, x_wikiguy integrity (knowledge_kind; normative docs need verified_commit), " +
-          "internal markdown links resolve, index.md and log.md exist at the corpus root. Returns a per-file error report.",
+          "internal markdown links resolve, index.md and log.md exist at the corpus root. Delegates to OpenWiki validation when installed; otherwise runs PawCrew's native validator.",
         args: {},
         execute: async (_args: any, ctx: any): Promise<Res> => {
           const root = rootOf(ctx)
           const docs = docsRoot(root)
           if (!fs.existsSync(docs)) return { title: "wiki_validate", output: `error: no .ai/docs corpus at ${docs}` }
+
+          if (openwikiUsable(root)) {
+            const res = runOpenWiki(root, ["--print", "validate the OpenWiki corpus and return a JSON error list"])
+            if (res.ok) {
+              try {
+                const data = JSON.parse(res.stdout)
+                if (data?.errors?.length) {
+                  return {
+                    title: "wiki_validate: OpenWiki",
+                    output: `${data.errors.length} problem(s):\n` + data.errors.map((e: any) => `- ${e.file ?? "corpus"}: ${e.message}`).join("\n"),
+                  }
+                }
+                return { title: "wiki_validate: OpenWiki", output: "OpenWiki validation passed." }
+              } catch {
+                // fall through
+              }
+            }
+          }
+
           const errors: string[] = []
           const files = walkMd(docs)
           for (const f of files) {
             const rel = path.relative(root, f)
-            // index.md / log.md at the corpus root are wiki_sync infrastructure, not knowledge documents.
             const isInfra = f === path.join(docs, "index.md") || f === path.join(docs, "log.md")
             const { fm, body } = splitFrontmatterFile(f)
             if (!fm && !isInfra) { errors.push(`${rel}: missing YAML frontmatter`); continue }
@@ -352,7 +480,8 @@ export default (input: any) => {
       wiki_sync: {
         description:
           "Synchronize corpus infrastructure after knowledge changes: regenerate .ai/docs/index.md from titles/descriptions, append a dated entry to log.md " +
-          "for the changed paths, and no-op silently when nothing changed (no Git noise).",
+          "for the changed paths, and no-op silently when nothing changed (no Git noise). When OpenWiki is installed, it handles index/log sync first; " +
+          "PawCrew then refreshes the same files with its own grouping if needed.",
         args: {
           changed_paths: z.array(z.string()).describe("the .ai/docs paths created/updated in this transaction"),
         },
@@ -362,7 +491,17 @@ export default (input: any) => {
           if (!fs.existsSync(docs)) return { title: "wiki_sync", output: `error: no .ai/docs corpus at ${docs}` }
           const changed: string[] = Array.isArray(args?.changed_paths) ? args.changed_paths.map(String) : []
 
-          // --- index.md ---
+          let openwikiMsg = ""
+          if (openwikiUsable(root)) {
+            const res = runOpenWiki(root, ["--update", "--print", "sync the OpenWiki index and log"])
+            if (res.ok) {
+              openwikiMsg = "OpenWiki sync: completed."
+              mergeOpenWikiOutput(root)
+            } else {
+              openwikiMsg = `OpenWiki sync: skipped (${res.stderr.slice(0, 200)})`
+            }
+          }
+
           const files = walkMd(docs).filter((f) => !f.endsWith(`${path.sep}index.md`) && !f.endsWith(`${path.sep}log.md`))
           const groups = new Map<string, string[]>()
           for (const f of files) {
@@ -382,7 +521,6 @@ export default (input: any) => {
           const indexChanged = want.trim() !== had.trim()
           if (indexChanged) fs.writeFileSync(idxPath, want)
 
-          // --- log.md ---
           let logChanged = false
           if (changed.length) {
             const today = new Date().toISOString().slice(0, 10)
@@ -396,15 +534,16 @@ export default (input: any) => {
           }
 
           if (!indexChanged && !logChanged) {
-            return { title: "wiki_sync", output: "No documentation changes required. Existing project knowledge is already current." }
+            return { title: "wiki_sync", output: [openwikiMsg, "No documentation changes required. Existing project knowledge is already current."].filter(Boolean).join("\n") }
           }
           return {
             title: "wiki_sync",
             output: [
+              openwikiMsg,
               indexChanged ? "index.md: regenerated" : "index.md: unchanged (no-op)",
               logChanged ? `log.md: appended entry for ${changed.length} path(s)` : "log.md: unchanged (no-op)",
               "Next: wiki_validate.",
-            ].join("\n"),
+            ].filter(Boolean).join("\n"),
           }
         },
       },
@@ -412,8 +551,7 @@ export default (input: any) => {
   }
 }
 
-/** Re-extract a single top-level block from an existing file's frontmatter (for preserve_unknown). */
-function oldBlock(root: string, file: string, key: string): string | null {
+function oldBlock(file: string, key: string): string | null {
   if (!fs.existsSync(file)) return null
   const { fm } = splitFrontmatterFile(file)
   return topBlocks(fm).get(key) ?? null

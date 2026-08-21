@@ -59,7 +59,9 @@ type: Improvement
 title: <proposed kit change>
 description: <one sentence>
 status: proposed
-created: YYYY-MM-DD
+generated:
+  by: lorecat
+  at: YYYY-MM-DDTHH:mm:ssZ
 x_wikiguy:
   knowledge_kind: Improvement
   authority: descriptive

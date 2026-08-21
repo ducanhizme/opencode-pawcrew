@@ -24,6 +24,16 @@ Superpowers skills `requesting-code-review` and `subagent-driven-development` in
 
 `guardclaw` is separate from the Superpowers review flow. Dispatch `subagent_type: "guardclaw"` only when the user explicitly requests a security review or the approved scope touches a high-risk security boundary. Include the exact diff/range, threat-relevant context, and expected output. It complements rather than replaces `judgewhiskers`; do not dispatch it for ordinary code review.
 
+## Project-local Skills
+
+Before delegating, check whether the project has custom skills that cover this task. Run `skill("crewkit-skill-registry")` or use the helper script to list skills in:
+
+- `<project>/.opencode/skills/*` — project-local skills (authoritative for this repo)
+- `~/.config/opencode/skills/*` — global user skills
+- plugin-shipped skills under `~/.config/opencode/plugins/cache/*/skills/*`
+
+If a project-local skill matches the task, invoke it instead of (or before) generic delegation. Project-local skills take precedence over global and plugin-shipped skills.
+
 ## Dispatch mechanics (opencode)
 
 Dispatch via the `task` tool: `subagent_type` (agent name), `description` (3-5 words), `prompt` (self-contained: goal, context, constraints, expected output format).

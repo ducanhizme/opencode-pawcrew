@@ -2,9 +2,9 @@
 
 A minimal, native-first agent system for OpenCode: four primary agents
 (PawBuilder, PatchPaw, LetMeowCook, LoreCat), five intelligence subagents
-(Sherclaw, SearchPurr, ElderPaw, JudgeWhiskers, GuardClaw), eight custom skills
+(Sherclaw, SearchPurr, ElderPaw, JudgeWhiskers, GuardClaw), nine custom skills
 (`ast-grep`, `bug-flow`, `change-impact-analysis`, `change-request-flow`,
-`contract-regression-testing`, `delegation-policy`, `pdca-loop`, `retrospective`),
+`contract-regression-testing`, `crewkit-skill-registry`, `delegation-policy`, `pdca-loop`, `retrospective`),
 four routing commands (`/build`, `/patch`, `/cook`, `/lore-cat-save-it`), and two
 deterministic plugins (`lore-cat.ts`, `superpowers-gate.ts`).
 
@@ -45,6 +45,7 @@ per-file symlinks (run `./install.sh`).
  ├── change-impact-analysis/SKILL.md
  ├── change-request-flow/SKILL.md
  ├── contract-regression-testing/SKILL.md
+ ├── crewkit-skill-registry/SKILL.md
  ├── delegation-policy/SKILL.md
  ├── pdca-loop/SKILL.md
  └── retrospective/SKILL.md
@@ -133,6 +134,14 @@ project-knowledge corpus. Normative knowledge is never silently rewritten to
 match code; the user owns source-of-truth decisions. Git recency is freshness
 evidence, never authority.
 
+The `lore-cat.ts` plugin is an **OpenWiki-backed facade**. It exposes the same
+six deterministic `wiki_*` tools (`wiki_search`, `wiki_read`, `wiki_freshness`,
+`wiki_save_concept`, `wiki_validate`, `wiki_sync`). When the project has the
+`openwiki` npm dependency installed, generation/update/validation are
+delegated to OpenWiki; PawCrew-specific behavior (`x_wikiguy` freshness,
+OKF v0.2, reconciliation modes, write-guard into `.ai/docs`) is preserved either
+way.
+
 Integrations:
 - PatchPaw: CR impact = LoreCat (project truth) + Sherclaw (code truth);
   approved CR authorizes auto knowledge sync; final report has Knowledge Sync.
@@ -186,14 +195,41 @@ or proposed kit improvements.
 
 ## Install / update
 
+### Global install (symlinks into `~/.config/opencode/`)
+
 ```
 ./install.sh          # idempotent; re-points existing symlinks
 ./install.sh --force  # replaces conflicting regular files with symlinks
 ```
+
+### Project-local install (copies into `PROJECT/.opencode/`)
+
+Use this when the project already has its own OpenCode config, custom agents, or team-specific skills:
+
+```
+./install.sh --project ./my-existing-project
+./install.sh --project ./my-existing-project --force  # backup + overwrite existing files
+```
+
+Project mode copies PawCrew files instead of symlinking, so the crew travels with the repo and never clobbers existing project customizations unless `--force` is used.
 
 After installing, **quit and restart opencode** — config is not hot-reloaded.
 
 ## Kit commands
 
 - `git -C ~/opencode-crewkit status` — check drift from installed state
-- Installed files are symlinks; edit them here, changes apply everywhere.
+- Global mode: installed files are symlinks; edit them here, changes apply everywhere.
+- Project mode: files are copies inside the target repo; refresh with `./install.sh --project <path>`.
+
+<!-- OPENWIKI:START -->
+
+## OpenWiki
+
+This repository has a generated `openwiki/` evidence index. It is optional just-in-time context, not required startup reading.
+
+- Treat source code and tests as authoritative. A brief's unknowns and review items are verification gaps, not automatic requirements.
+- Prefer the narrowest quiet validation that proves the changed behavior. Preserve complete failure output.
+
+The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do not hand-edit generated OpenWiki pages unless explicitly asked; prefer updating source code/docs and letting OpenWiki regenerate.
+
+<!-- OPENWIKI:END -->

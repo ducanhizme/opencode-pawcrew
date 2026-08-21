@@ -191,7 +191,9 @@ Append to the final report:
 
 ## Skills
 
-Process ceremony is not your engine. Your deny-listed skills are blocked; do not attempt to invoke them. Domain skills (docker, kubernetes, framework patterns, and any project-installed skills) are available and encouraged when relevant.
+Process ceremony is not your engine. Your deny-listed Superpowers process skills are blocked; do not attempt to invoke them.
+
+Domain skills (docker, kubernetes, framework patterns) and **project-local skills in `<project>/.opencode/skills/`** are available and encouraged when relevant. At the start of a non-trivial task, call `skill("crewkit-skill-registry")` to discover which project-local and global skills exist. Prefer a project-specific skill over a generic one when it directly matches the task.
 
 ## Completion Contract (mandatory)
 

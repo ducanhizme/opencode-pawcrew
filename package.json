@@ -1,0 +1,20 @@
+{
+  "name": "opencode-pawcrew",
+  "version": "0.1.0",
+  "description": "OpenCode PawCrew — native-first agent system with OpenWiki-backed knowledge governance",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "wiki:init": "openwiki --init",
+    "wiki:update": "openwiki --update",
+    "wiki:status": "openwiki --status",
+    "postinstall": "node scripts/openwiki-bootstrap.js"
+  },
+  "dependencies": {
+    "openwiki": "^0.3.3",
+    "zod": "^3.23.8"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

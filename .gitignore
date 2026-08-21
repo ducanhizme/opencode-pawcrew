@@ -1,1 +1,6 @@
 .superpowers/
+node_modules/
+package-lock.json
+.openwikiignore
+.ai/docs/.last-update.json
+.ai/docs/.openwiki/

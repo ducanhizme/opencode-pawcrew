@@ -31,7 +31,9 @@ title: <concise goal>
 description: <one sentence>
 status: planned
 agent: pawbuilder|patchpaw|letmeowcook
-created: YYYY-MM-DD
+generated:
+  by: lorecat
+  at: YYYY-MM-DDTHH:mm:ssZ
 x_wikiguy:
   knowledge_kind: Plan
   authority: descriptive

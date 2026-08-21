@@ -41,6 +41,23 @@ Project: https://github.com/obra/superpowers
 Referenced as an external OpenCode plugin (not vendored in this repository).
 Users install it independently; this repo only configures and scopes it.
 
+## OpenWiki
+
+Project: https://github.com/langchain-ai/openwiki
+
+Installed as an npm dependency (`openwiki`). Used by the LoreCat plugin
+(`.opencode/plugin/lore-cat.ts`) to generate, update, validate, and format
+project knowledge under `.ai/docs/` according to Open Knowledge Format (OKF)
+v0.2 conventions. PawCrew's `x_wikiguy` freshness, write-guard, and
+reconciliation semantics are preserved independently.
+
+## Google OKF (Open Knowledge Format)
+
+Spec: https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md
+
+Conventions for frontmatter, document lifecycle, and corpus structure used by
+`.ai/docs/**`.
+
 ## OpenCode
 
 Project: https://opencode.ai

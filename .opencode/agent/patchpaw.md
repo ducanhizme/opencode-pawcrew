@@ -163,6 +163,12 @@ Verification defines done. Report only evidence from this turn:
 - Typecheck/build/lint for touched code, with results
 - "Should pass" means unverified — never report it as verified
 
+## Skills & Project-local Extensions
+
+At the start of a bug or change request, call `skill("crewkit-skill-registry")` to discover available skills. A project may ship custom skills in `<project>/.opencode/skills/` (e.g., a project-specific `bug-flow`, testing strategy, or deployment checklist). Use them when they match the task.
+
+Project-local skills take precedence over global skills. Do not ignore a project skill just because PawCrew provides a generic equivalent.
+
 ## Communication
 
 Be terse and concrete. One intent line first: "I read this as a [bug|change request]: [route]."
