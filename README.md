@@ -58,110 +58,22 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
 
 ### Primary agents
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin: 24px 0;">
-
-<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 20px; background: #ffffff;">
-  <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
-    <img src="images/pawbuilder.png" width="72" height="72" alt="PawBuilder" style="border-radius: 12px;">
-    <div>
-      <div style="font-size: 18px; font-weight: 700;">PawBuilder</div>
-      <div style="font-size: 13px; color: #57606a;">Collaborative Feature Engineer</div>
-    </div>
-  </div>
-  <p style="margin: 0 0 12px 0; font-size: 14px;">Takes a feature request from idea to verified implementation. Stops at material design decisions; user owns architecture, public API, schema, and behavior changes.</p>
-  <div style="font-size: 12px;">
-    <span style="display: inline-block; background: #ddf4ff; color: #0969da; padding: 3px 10px; border-radius: 999px; margin-right: 6px;">Approval: design gates</span>
-    <span style="display: inline-block; background: #dafbe1; color: #1a7f37; padding: 3px 10px; border-radius: 999px;">Process: Superpowers</span>
-  </div>
-</div>
-
-<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 20px; background: #ffffff;">
-  <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
-    <img src="images/patchpaw.png" width="72" height="72" alt="PatchPaw" style="border-radius: 12px;">
-    <div>
-      <div style="font-size: 18px; font-weight: 700;">PatchPaw</div>
-      <div style="font-size: 13px; color: #57606a;">Change-Controlled Maintenance Engineer</div>
-    </div>
-  </div>
-  <p style="margin: 0 0 12px 0; font-size: 14px;">Fixes bugs and implements bounded change requests with the smallest correct change. No material code change before user approves the proposed change.</p>
-  <div style="font-size: 12px;">
-    <span style="display: inline-block; background: #fff8c5; color: #7d4e00; padding: 3px 10px; border-radius: 999px; margin-right: 6px;">Approval: proposed change</span>
-    <span style="display: inline-block; background: #ffebe9; color: #cf222e; padding: 3px 10px; border-radius: 999px;">Rule: no renovation</span>
-  </div>
-</div>
-
-<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 20px; background: #ffffff;">
-  <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
-    <img src="images/letmeowcook.png" width="72" height="72" alt="LetMeowCook" style="border-radius: 12px;">
-    <div>
-      <div style="font-size: 18px; font-weight: 700;">LetMeowCook</div>
-      <div style="font-size: 13px; color: #57606a;">Autonomous Execution Engineer</div>
-    </div>
-  </div>
-  <p style="margin: 0 0 12px 0; font-size: 14px;">Owns a complete goal end-to-end: migrations, upgrades, CI fixes. No questions during execution except genuine blockers; mandatory outcome report and knowledge gates.</p>
-  <div style="font-size: 12px;">
-    <span style="display: inline-block; background: #fbefff; color: #8250df; padding: 3px 10px; border-radius: 999px; margin-right: 6px;">Autonomy: full</span>
-    <span style="display: inline-block; background: #ffebe9; color: #cf222e; padding: 3px 10px; border-radius: 999px;">100% or nothing</span>
-  </div>
-</div>
-
-<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 20px; background: #ffffff;">
-  <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
-    <img src="images/lorecat.png" width="72" height="72" alt="LoreCat" style="border-radius: 12px;">
-    <div>
-      <div style="font-size: 18px; font-weight: 700;">LoreCat</div>
-      <div style="font-size: 13px; color: #57606a;">Project Knowledge Governor</div>
-    </div>
-  </div>
-  <p style="margin: 0 0 12px 0; font-size: 14px;">Owns the project truth corpus under <code>.ai/docs</code> — specs, architecture, ADRs, workflows. Detects drift and reconciles sources of truth without silently rewriting normative knowledge.</p>
-  <div style="font-size: 12px;">
-    <span style="display: inline-block; background: #fff8c5; color: #7d4e00; padding: 3px 10px; border-radius: 999px; margin-right: 6px;">Source of truth</span>
-    <span style="display: inline-block; background: #ddf4ff; color: #0969da; padding: 3px 10px; border-radius: 999px;">Drift detection</span>
-  </div>
-</div>
-
-</div>
+| | Agent | Role | What it does | Approval contract |
+|---|---|---|---|---|
+| <img src="images/pawbuilder.png" width="64" alt="PawBuilder"/> | **PawBuilder** | Collaborative Feature Engineer | Takes a feature request from idea to verified implementation. Stops at material design decisions; user owns architecture, public API, schema, and behavior changes. | Approval: design gates · Process: Superpowers |
+| <img src="images/patchpaw.png" width="64" alt="PatchPaw"/> | **PatchPaw** | Change-Controlled Maintenance Engineer | Fixes bugs and implements bounded change requests with the smallest correct change. No material code change before the user approves the proposed change. | Approval: proposed change · Rule: no renovation |
+| <img src="images/letmeowcook.png" width="64" alt="LetMeowCook"/> | **LetMeowCook** | Autonomous Execution Engineer | Owns a complete goal end-to-end: migrations, upgrades, CI fixes. No questions during execution except genuine blockers; mandatory outcome report and knowledge gates. | Autonomy: full · 100% or nothing |
+| <img src="images/lorecat.png" width="64" alt="LoreCat"/> | **LoreCat** | Project Knowledge Governor | Owns the project truth corpus under `.ai/docs` — specs, architecture, ADRs, workflows. Detects drift and reconciles sources of truth without silently rewriting normative knowledge. | Source of truth · Drift detection |
 
 ### Intelligence subagents
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 24px 0;">
-
-<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 16px; background: #ffffff; text-align: center;">
-  <img src="images/sherclaw.png" width="64" height="64" alt="Sherclaw" style="border-radius: 12px; margin-bottom: 10px;">
-  <div style="font-size: 16px; font-weight: 700;">Sherclaw</div>
-  <div style="font-size: 12px; color: #0969da; margin-bottom: 8px;">Code Truth</div>
-  <p style="margin: 0; font-size: 13px; color: #24292f;">Read-only internal investigator. Where things live, how they work, who depends on them.</p>
-</div>
-
-<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 16px; background: #ffffff; text-align: center;">
-  <img src="images/searchpurr.png" width="64" height="64" alt="SearchPurr" style="border-radius: 12px; margin-bottom: 10px;">
-  <div style="font-size: 16px; font-weight: 700;">SearchPurr</div>
-  <div style="font-size: 12px; color: #0969da; margin-bottom: 8px;">External Truth</div>
-  <p style="margin: 0; font-size: 13px; color: #24292f;">Official docs, upstream source, real-world usage. Labeled evidence via Context7, Exa, GitHub.</p>
-</div>
-
-<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 16px; background: #ffffff; text-align: center;">
-  <img src="images/elderpaw.png" width="64" height="64" alt="ElderPaw" style="border-radius: 12px; margin-bottom: 10px;">
-  <div style="font-size: 16px; font-weight: 700;">ElderPaw</div>
-  <div style="font-size: 12px; color: #8250df; margin-bottom: 8px;">Technical Judgement</div>
-  <p style="margin: 0; font-size: 13px; color: #24292f;">Architecture trade-offs, hard debugging, one concrete recommendation with effort + confidence.</p>
-</div>
-
-<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 16px; background: #ffffff; text-align: center;">
-  <img src="images/judgewhiskers.png" width="64" height="64" alt="JudgeWhiskers" style="border-radius: 12px; margin-bottom: 10px;">
-  <div style="font-size: 16px; font-weight: 700;">JudgeWhiskers</div>
-  <div style="font-size: 12px; color: #8250df; margin-bottom: 8px;">Review Gate</div>
-  <p style="margin: 0; font-size: 13px; color: #24292f;">Dispatched reviewer. Verdicts as BLOCKER / SHOULD-FIX / NIT with spec compliance evidence.</p>
-</div>
-
-<div style="border: 1px solid #d0d7de; border-radius: 12px; padding: 16px; background: #ffffff; text-align: center;">
-  <img src="images/guardclaw.png" width="64" height="64" alt="GuardClaw" style="border-radius: 12px; margin-bottom: 10px;">
-  <div style="font-size: 16px; font-weight: 700;">GuardClaw</div>
-  <div style="font-size: 12px; color: #cf222e; margin-bottom: 8px;">Security Verdict</div>
-  <p style="margin: 0; font-size: 13px; color: #24292f;">Focused security review for auth/authz, secrets, payments, untrusted input, sensitive data.</p>
-</div>
-
-</div>
+| | Agent | Specialty | What it does |
+|---|---|---|---|
+| <img src="images/sherclaw.png" width="48" alt="Sherclaw"/> | **Sherclaw** | Code Truth | Read-only internal investigator. Where things live, how they work, who depends on them. |
+| <img src="images/searchpurr.png" width="48" alt="SearchPurr"/> | **SearchPurr** | External Truth | Official docs, upstream source, real-world usage. Labeled evidence via Context7, Exa, GitHub. |
+| <img src="images/elderpaw.png" width="48" alt="ElderPaw"/> | **ElderPaw** | Technical Judgement | Architecture trade-offs, hard debugging, one concrete recommendation with effort + confidence. |
+| <img src="images/judgewhiskers.png" width="48" alt="JudgeWhiskers"/> | **JudgeWhiskers** | Review Gate | Dispatched reviewer. Verdicts as BLOCKER / SHOULD-FIX / NIT with spec compliance evidence. |
+| <img src="images/guardclaw.png" width="48" alt="GuardClaw"/> | **GuardClaw** | Security Verdict | Focused security review for auth/authz, secrets, payments, untrusted input, sensitive data. |
 
 ## Quick start
 
