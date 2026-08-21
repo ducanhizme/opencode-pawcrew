@@ -58,22 +58,169 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
 
 ### Primary agents
 
-| | Agent | Role | What it does | Approval contract |
-|---|---|---|---|---|
-| <img src="images/pawbuilder.png" width="64" alt="PawBuilder"/> | **PawBuilder** | Collaborative Feature Engineer | Takes a feature request from idea to verified implementation. Stops at material design decisions; user owns architecture, public API, schema, and behavior changes. | Approval: design gates · Process: Superpowers |
-| <img src="images/patchpaw.png" width="64" alt="PatchPaw"/> | **PatchPaw** | Change-Controlled Maintenance Engineer | Fixes bugs and implements bounded change requests with the smallest correct change. No material code change before the user approves the proposed change. | Approval: proposed change · Rule: no renovation |
-| <img src="images/letmeowcook.png" width="64" alt="LetMeowCook"/> | **LetMeowCook** | Autonomous Execution Engineer | Owns a complete goal end-to-end: migrations, upgrades, CI fixes. No questions during execution except genuine blockers; mandatory outcome report and knowledge gates. | Autonomy: full · 100% or nothing |
-| <img src="images/lorecat.png" width="64" alt="LoreCat"/> | **LoreCat** | Project Knowledge Governor | Owns the project truth corpus under `.ai/docs` — specs, architecture, ADRs, workflows. Detects drift and reconciles sources of truth without silently rewriting normative knowledge. | Source of truth · Drift detection |
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <img src="images/pawbuilder.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>The user owns the destination. I own the path there.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      PawBuilder takes a feature request from idea to verified implementation while keeping material design decisions visible to the user. It explores the existing system, proposes an approved design, then builds and verifies with Superpowers process skills. It never asks about implementation trivia, but it always stops at architecture, public API, schema, persistence, and behavior changes.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Collaborative Feature Engineer</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "Build this with me."</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/pawbuilder.md"><code>pawbuilder.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `9router/cx/gpt-5.5` `cliproxy/gpt-5.6-sol`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Choose a model with strong planning, delegation, and user-facing decision discipline. PawBuilder coordinates Superpowers process skills and multi-subagent research, so instruction-following and context budget matter more than raw coding throughput.</td></tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <img src="images/patchpaw.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>Understand before changing. Verify before closing.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      PatchPaw is the change-controlled maintenance engineer. It classifies every request as BUG or CHANGE REQUEST, investigates the repository first, proposes the smallest correct change, and gets explicit approval before editing. It fixes the thing without renovating the neighborhood, then verifies and syncs knowledge for approved change requests.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Change-Controlled Maintenance Engineer</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "Fix this, don't get creative."</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/patchpaw.md"><code>patchpaw.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `9router/cx/gpt-5.4-mini` `cliproxy/gpt-5.6-sol`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Prefer a model that is conservative and precise. PatchPaw must distinguish bugs from change requests, resist premature fixes, and produce minimal diffs. Strong root-cause reasoning beats creative generation here.</td></tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <img src="images/letmeowcook.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>100% or nothing.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      LetMeowCook is the autonomous execution engineer. It accepts a complete goal — migrations, upgrades, CI fixes — and owns it end-to-end. It makes reasonable technical decisions, runs verification without asking, recovers from failures, and finishes with a mandatory outcome report. It asks only when blocked by missing credentials, ambiguous business decisions, or external destructive actions.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Autonomous Execution Engineer</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "Take this goal off my hands."</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/letmeowcook.md"><code>letmeowcook.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `9router/cx/gpt-5.5` `cliproxy/gpt-5.6-sol`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Pick a model with high tool autonomy and persistence. LetMeowCook does the work itself, so it needs strong coding, debugging, and recovery skills rather than delegation ceremony.</td></tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <img src="images/lorecat.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>Git recency is evidence, never authority.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      LoreCat governs the project knowledge corpus under `.ai/docs`. It answers questions from the corpus, checks freshness against Git, verifies implementation claims through Sherclaw, detects docs-vs-code drift, and reconciles sources of truth. In direct mode it asks the user to resolve material conflicts; as a subagent it returns structured evidence only.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Project Knowledge Governor</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "What does the project officially say — and is it still true?"</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/lorecat.md"><code>lorecat.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>deepseek/deepseek-v4-pro</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `deepseek/deepseek-v4-pro` `cliproxy/gpt-5.6-sol` `ollama-cloud/glm-5.2`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Use a model with strong long-context reading, structured output, and careful handling of conflicting claims. LoreCat rarely edits and must never silently pick a side in normative conflicts.</td></tr>
+</table>
 
 ### Intelligence subagents
 
-| | Agent | Specialty | What it does |
-|---|---|---|---|
-| <img src="images/sherclaw.png" width="48" alt="Sherclaw"/> | **Sherclaw** | Code Truth | Read-only internal investigator. Where things live, how they work, who depends on them. |
-| <img src="images/searchpurr.png" width="48" alt="SearchPurr"/> | **SearchPurr** | External Truth | Official docs, upstream source, real-world usage. Labeled evidence via Context7, Exa, GitHub. |
-| <img src="images/elderpaw.png" width="48" alt="ElderPaw"/> | **ElderPaw** | Technical Judgement | Architecture trade-offs, hard debugging, one concrete recommendation with effort + confidence. |
-| <img src="images/judgewhiskers.png" width="48" alt="JudgeWhiskers"/> | **JudgeWhiskers** | Review Gate | Dispatched reviewer. Verdicts as BLOCKER / SHOULD-FIX / NIT with spec compliance evidence. |
-| <img src="images/guardclaw.png" width="48" alt="GuardClaw"/> | **GuardClaw** | Security Verdict | Focused security review for auth/authz, secrets, payments, untrusted input, sensitive data. |
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <img src="images/sherclaw.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>Evidence only. Absolute paths always.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      Sherclaw is the read-only internal code investigator. It answers where things live, how they currently work, who consumes them, and what tests cover them. It gives evidence, not opinions, and never edits code or spawns further agents.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Code Truth</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "Show me where it lives and how it works."</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/sherclaw.md"><code>sherclaw.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `9router/cx/gpt-5.4-mini` `cliproxy/gpt-5.6-sol`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> A fast, context-efficient coding model is ideal. Sherclaw reads and reports; it does not generate large prose or creative solutions.</td></tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <img src="images/searchpurr.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>Labeled evidence beats confident memory.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      SearchPurr is the external docs and source researcher. It uses Context7 for official docs, Exa for broad web research, and GitHub public code search for real-world usage. Every claim carries a source label — official docs, real-world implementation, or community discussion.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>External Truth</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "Find the source, not the guess."</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/searchpurr.md"><code>searchpurr.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `9router/cx/gpt-5.5` `cliproxy/gpt-5.6-sol`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Choose a model comfortable with synthesizing docs, changelogs, and code examples. SearchPurr must cite sources explicitly and avoid training-memory assumptions.</td></tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <img src="images/elderpaw.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>One clear path. No unnecessary complexity.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      ElderPaw is the read-only technical advisor. It is consulted on architecture trade-offs, hard debugging, concurrency, security, and suspiciously complex solutions. It returns exactly one primary recommendation with effort estimate, confidence, and key risks.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Technical Judgement</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "You can do that... but here's what you'll regret later."</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/elderpaw.md"><code>elderpaw.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `cliproxy/gpt-5.6-sol` `deepseek/deepseek-v4-pro`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Use your strongest planning-and-judgment model. ElderPaw consumes provided evidence and produces dense, actionable advice; reasoning quality matters more than tool throughput.</td></tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <img src="images/judgewhiskers.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>Verdict first. Severity-gated findings.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      JudgeWhiskers is the dispatched review specialist. PawBuilder and PatchPaw override Superpowers review dispatch to send review work here instead of to a generic agent or Sherclaw. It returns verdicts as BLOCKER / SHOULD-FIX / NIT with spec compliance evidence and runs verification itself when possible.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Review Gate</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "Does this meet the spec?"</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/judgewhiskers.md"><code>judgewhiskers.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `cliproxy/gpt-5.6-sol-review` `9router/cx/gpt-5.6-sol-review`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Prefer a review-tuned or reasoning-capable model. JudgeWhiskers must read diffs, compare against specs, and give severity-gated verdicts without drifting into implementation.</td></tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <img src="images/guardclaw.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>Trust boundary first. Evidence-backed findings only.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      GuardClaw is the focused read-only security reviewer. It is dispatched for explicit security reviews or when a change crosses a high-risk boundary: auth/authz, secrets, payments, untrusted input, filesystem, network, deserialization, or sensitive data. It reports only evidence-backed vulnerabilities with exploit path, confidence, remediation, and residual risk.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Security Verdict</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "Where is the trust boundary?"</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/guardclaw.md"><code>guardclaw.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `cliproxy/gpt-5.6-sol` `deepseek/deepseek-v4-pro`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Use a model with strong security reasoning and low hallucination on exploit paths. GuardClaw must distinguish real vulnerabilities from speculative risks.</td></tr>
+</table>
 
 ## Quick start
 
