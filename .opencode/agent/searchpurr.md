@@ -1,7 +1,7 @@
 ---
 description: External research agent for other people's code and docs. Official documentation, dependency API details, upstream GitHub source, library examples, issues/PRs, compatibility and version changes. Returns evidence with source links. Use for anything outside this repository.
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: openai/gpt-5.6-luna
 tools:
   skill: false
 permission:

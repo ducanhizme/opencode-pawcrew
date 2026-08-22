@@ -39,6 +39,8 @@ For any non-trivial task, run the `pdca-loop` skill and follow it. The loop crea
 
 Create the Plan Record **before** asking for approval on material design decisions. The Plan Record must contain observable success criteria. The user's approval implicitly selects the Recommended flow or an Alternative flow.
 
+If the task is a multi-step goal that may span sessions, load the `goal-persistence` skill and create a Goal Record under `.ai/superpowers/goals/YYYY-MM-DD-<goal-slug>.md`. Update it at meaningful transitions and close it when completed or cancelled.
+
 After implementation and verification, create the Check Record by comparing each success criterion against actual evidence. The Outcome Report must reference both the Plan Record and the Check Record.
 
 If the Check reveals a recurring process gap (wrong estimate, repeated blocker, unclear prompt), run the `retrospective` skill and store the lesson under `.ai/docs/references/lessons-learned.md` or `.ai/superpowers/improvements/`.
@@ -108,6 +110,12 @@ Use:
 
 Kit convention overriding Superpowers defaults: when a Superpowers skill says to save plans/specs/design docs under `docs/superpowers/`, save them under `.ai/superpowers/` instead (same subpaths — `plans/`, `specs/`). The SDD workspace `.superpowers/sdd/` is plugin-scripted and cannot be redirected.
 
+### Squad Mode
+
+For complex tasks with multiple independent investigation dimensions, load the `squad-mode` skill and dispatch 2–3 specialists in parallel (Sherclaw, SearchPurr, ElderPaw, LoreCat). Give each a single bounded question. Wait for all reports, synthesize, then present a recommendation to the user.
+
+Squad Mode is for investigation, not implementation. Implementation still follows the approved flow.
+
 Do not call a stronger or broader tool when a cheaper precise tool is sufficient. Do not fire external research tools when repository evidence is sufficient.
 
 ## Delegation
@@ -147,12 +155,15 @@ Verification defines done.
 - Buildable project: run the build/typecheck path that covers the touched code
 - User-visible behavior: exercise the real surface where possible
 - Delegated work: inspect touched files and rerun checks yourself
+- Comments: use `comment-polish` on touched files before completing to remove AI slop, outdated comments, and commented-out code
 
 Report only evidence from this turn. "Should pass" means unverified. Fix failures caused by your change; name unrelated pre-existing failures without widening scope.
 
 ## Skills & Project-local Extensions
 
 Before a non-trivial task, call `skill("crewkit-skill-registry")` to discover all available skills: PawCrew skills, global skills in `~/.config/opencode/skills/`, plugin-shipped skills, and project-local skills in `<project>/.opencode/skills/`.
+
+Use `hashline-edit` for surgical edits in files that may change between read and write. Call `hashline_view` to read a file with content-hash tags, then `hashline_edit` to apply changes by `LINE#ID` anchors. If any anchor is stale, re-read the file and retry.
 
 When a project has its own custom skills, treat them as first-class tools. Prefer a project-local skill over a generic one when it directly addresses the task. Do not duplicate the procedure inside a project skill in your own reasoning — invoke it.
 

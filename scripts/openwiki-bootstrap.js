@@ -60,4 +60,16 @@ writeIfMissing(
   JSON.stringify({ target: ".ai/docs", source: "openwiki", generatedBy: "pawcrew" }, null, 2)
 )
 
+const openwikiConfigPath = path.join(repoRoot, ".ai", "openwiki.config.json")
+writeIfMissing(
+  openwikiConfigPath,
+  JSON.stringify({
+    "$schema": "./.ai/openwiki.config.schema.json",
+    "provider": "openai-compatible",
+    "modelId": "openai/gpt-5.6-luna",
+    "baseUrl": "",
+    "apiKey": ""
+  }, null, 2) + "\n"
+)
+
 console.log("OpenWiki bootstrap complete for PawCrew.")

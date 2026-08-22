@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OpenWiki Per-Project Configuration",
+  "description": "Project-level overrides for the OpenWiki CLI used by PawCrew's lore-cat plugin. Values here take precedence over ~/.openwiki/.env.",
+  "type": "object",
+  "properties": {
+    "provider": {
+      "type": "string",
+      "description": "OpenWiki provider identifier (e.g. openai, openai-compatible)."
+    },
+    "modelId": {
+      "type": "string",
+      "description": "Model ID passed to openwiki via --modelId. Examples: openai/gpt-5.6-luna, google-vertex/gemini-3.5-flash."
+    },
+    "baseUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "OpenAI-compatible API base URL. Maps to OPENAI_COMPATIBLE_BASE_URL."
+    },
+    "apiKey": {
+      "type": "string",
+      "description": "API key for the configured provider. Maps to OPENAI_COMPATIBLE_API_KEY. Keep secret; do not commit plain keys."
+    }
+  },
+  "additionalProperties": false
+}

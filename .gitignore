@@ -4,3 +4,4 @@ package-lock.json
 .openwikiignore
 .ai/docs/.last-update.json
 .ai/docs/.openwiki/
+.ai/openwiki.config.json

@@ -49,6 +49,8 @@ It started as a set of custom OpenCode agents for maintainers who were tired of:
 
 PawCrew treats these as design problems, not prompt-engineering hacks. The result is a small crew of agents with explicit authority boundaries, deterministic plugins for knowledge governance, and a PDCA loop that makes work auditable by default.
 
+For frontend work, PawPixel adds a closed token layer: `DESIGN.md` is the design-system contract, `frontend-guardian.ts` checks edits for violations, and a family of polish/audit/critique/delight skills refine the output.
+
 ## Why PawCrew
 
 - **Role clarity over role explosion** — four primary agents, five specialists, each with one job, one approval policy, and one completion contract. No agent-of-agents. No hidden runtime.
@@ -133,6 +135,24 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
 <table width="100%">
   <tr>
     <td width="30%" align="center" valign="top">
+      <img src="images/pawpixel.png" width="200" style="border-radius: 12px;">
+      <br><sub><i>Interfaces that look intentional.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      PawPixel is the frontend and UI specialist. It gathers design context, selects a taste direction from the kit's taste skills, and builds production-grade accessible UI within the existing project stack. It owns components, pages, layouts, design tokens, motion, and visual QA. It does not modify backend APIs or data models.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Frontend & UI Specialist</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "Design this with intention."</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/pawpixel.md"><code>pawpixel.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>openai/gpt-5.6-luna</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `openai/gpt-5.6-luna` `cliproxy/gpt-5.6-sol` `google-vertex/gemini-3.5-flash`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Choose a model with strong visual reasoning, design-system discipline, and coding accuracy. PawPixel must read context, pick a taste, and produce working UI, so instruction-following and attention to aesthetic details matter more than raw speed.</td></tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
       <img src="images/lorecat.png" width="200" style="border-radius: 12px;">
       <br><sub><i>Git recency is evidence, never authority.</i></sub>
     </td>
@@ -143,8 +163,8 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
   <tr><td colspan="2"><b>Role:</b> <code>Project Knowledge Governor</code></td></tr>
   <tr><td colspan="2"><b>Tagline:</b> "What does the project officially say — and is it still true?"</td></tr>
   <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/lorecat.md"><code>lorecat.md</code></a></td></tr>
-  <tr><td colspan="2"><b>Default Model:</b> <code>deepseek/deepseek-v4-pro</code></td></tr>
-  <tr><td colspan="2"><b>Recommended Models:</b> `deepseek/deepseek-v4-pro` `cliproxy/gpt-5.6-sol` `ollama-cloud/glm-5.2`</td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>openai/gpt-5.6-luna</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `openai/gpt-5.6-luna` `cliproxy/gpt-5.6-sol` `ollama-cloud/glm-5.2`</td></tr>
   <tr><td colspan="2"><b>Model Guidance:</b> Use a model with strong long-context reading, structured output, and careful handling of conflicting claims. LoreCat rarely edits and must never silently pick a side in normative conflicts.</td></tr>
 </table>
 
@@ -163,7 +183,7 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
   <tr><td colspan="2"><b>Role:</b> <code>Code Truth</code></td></tr>
   <tr><td colspan="2"><b>Tagline:</b> "Show me where it lives and how it works."</td></tr>
   <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/sherclaw.md"><code>sherclaw.md</code></a></td></tr>
-  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>openai/gpt-5.6-luna</code></td></tr>
   <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `9router/cx/gpt-5.4-mini` `cliproxy/gpt-5.6-sol`</td></tr>
   <tr><td colspan="2"><b>Model Guidance:</b> A fast, context-efficient coding model is ideal. Sherclaw reads and reports; it does not generate large prose or creative solutions.</td></tr>
 </table>
@@ -181,7 +201,7 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
   <tr><td colspan="2"><b>Role:</b> <code>External Truth</code></td></tr>
   <tr><td colspan="2"><b>Tagline:</b> "Find the source, not the guess."</td></tr>
   <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/searchpurr.md"><code>searchpurr.md</code></a></td></tr>
-  <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>openai/gpt-5.6-luna</code></td></tr>
   <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `9router/cx/gpt-5.5` `cliproxy/gpt-5.6-sol`</td></tr>
   <tr><td colspan="2"><b>Model Guidance:</b> Choose a model comfortable with synthesizing docs, changelogs, and code examples. SearchPurr must cite sources explicitly and avoid training-memory assumptions.</td></tr>
 </table>
@@ -200,7 +220,7 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
   <tr><td colspan="2"><b>Tagline:</b> "You can do that... but here's what you'll regret later."</td></tr>
   <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/elderpaw.md"><code>elderpaw.md</code></a></td></tr>
   <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
-  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `cliproxy/gpt-5.6-sol` `deepseek/deepseek-v4-pro`</td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `cliproxy/gpt-5.6-sol` `openai/gpt-5.6-luna`</td></tr>
   <tr><td colspan="2"><b>Model Guidance:</b> Use your strongest planning-and-judgment model. ElderPaw consumes provided evidence and produces dense, actionable advice; reasoning quality matters more than tool throughput.</td></tr>
 </table>
 
@@ -236,7 +256,7 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
   <tr><td colspan="2"><b>Tagline:</b> "Where is the trust boundary?"</td></tr>
   <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/guardclaw.md"><code>guardclaw.md</code></a></td></tr>
   <tr><td colspan="2"><b>Default Model:</b> <code>ollama-cloud/glm-5.2</code></td></tr>
-  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `cliproxy/gpt-5.6-sol` `deepseek/deepseek-v4-pro`</td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `ollama-cloud/glm-5.2` `cliproxy/gpt-5.6-sol` `openai/gpt-5.6-luna`</td></tr>
   <tr><td colspan="2"><b>Model Guidance:</b> Use a model with strong security reasoning and low hallucination on exploit paths. GuardClaw must distinguish real vulnerabilities from speculative risks.</td></tr>
 </table>
 
@@ -280,9 +300,29 @@ Then **restart opencode** (config is not hot-reloaded) and pick your entry point
 | `/build <feature>` | PawBuilder | New features, subsystems, creative work |
 | `/patch <bug or change>` | PatchPaw | Bugs, regressions, bounded behavior changes |
 | `/cook <goal>` | LetMeowCook | Migrations, upgrades, "make CI pass" |
+| `/design <UI request>` | PawPixel | Pages, components, redesigns, design systems, UI audits |
 | `/lore-cat-save-it` | LoreCat | Persist this conversation's knowledge into `.ai/docs` (verified, normalized, linked — not chat dumps) |
+| `/doctor` | (tooling) | Check PawCrew installation: symlinks, plugins, OpenWiki, AST-Grep, repo state |
 
 With the native `build`/`plan` agents disabled, the default agent is **PawBuilder**.
+
+### Per-project model / provider / API key for OpenWiki
+
+PawCrew delegates OpenWiki generation/update/validation to the `openwiki` CLI. Each project can override the global `~/.openwiki/.env` settings by editing `.ai/openwiki.config.json`:
+
+```json
+{
+  "provider": "openai-compatible",
+  "modelId": "openai/gpt-5.6-luna",
+  "baseUrl": "https://api.example.com/v1",
+  "apiKey": "sk-..."
+}
+```
+
+- `modelId` is passed via `--modelId` to every `openwiki` invocation.
+- `provider`, `baseUrl`, and `apiKey` are injected as environment variables (`OPENWIKI_PROVIDER`, `OPENAI_COMPATIBLE_BASE_URL`, `OPENAI_COMPATIBLE_API_KEY`).
+- Empty values fall back to `~/.openwiki/.env`.
+- This file is ignored by default — do not commit plain API keys.
 
 ## Tooling layer
 
@@ -312,6 +352,17 @@ a hard block on `sg --update-all` (no rewrites from a read-only investigator).
 | Skill | Type | Purpose |
 |---|---|---|
 | [`ast-grep`](.opencode/skills/ast-grep/SKILL.md) | domain | Structural search & safe rewrite via `sg`; falls back to grep+LSP when the binary is missing — and never fakes a structural search |
+| [`frontend-ui-engineering`](.opencode/skills/frontend-ui-engineering/SKILL.md) | domain | Production-grade UI engineering: component architecture, responsive, accessibility, state, anti-AI-aesthetic verification |
+| [`frontend-taste-router`](.opencode/skills/frontend-taste-router/SKILL.md) | domain | Maps a frontend brief to the right taste skill: design-taste-frontend, high-end-visual-design, minimalist-ui, gpt-taste, industrial-brutalist-ui |
+| [`design-md-contract`](.opencode/skills/design-md-contract/SKILL.md) | domain | Maintain DESIGN.md as the closed token layer and single source of truth for the project's UI system |
+| [`frontend-audit`](.opencode/skills/frontend-audit/SKILL.md) | domain | Measurable a11y, performance, responsive, theming, and anti-pattern checks with P0-P3 severity |
+| [`frontend-critique`](.opencode/skills/frontend-critique/SKILL.md) | domain | UX and design critique across hierarchy, IA, cognitive load, and brand fit |
+| [`frontend-polish`](.opencode/skills/frontend-polish/SKILL.md) | domain | Final consistency and micro-detail pass before shipping UI |
+| [`frontend-delight`](.opencode/skills/frontend-delight/SKILL.md) | domain | Tasteful motion and personality once fundamentals are solid |
+| [`hashline-edit`](.opencode/skills/hashline-edit/SKILL.md) | domain | Surgical hash-anchored file edits (`LINE#ID`) to avoid stale-line errors and silent corruption |
+| [`squad-mode`](.opencode/skills/squad-mode/SKILL.md) | orchestration | Lightweight parallel subagent dispatch (Sherclaw/SearchPurr/ElderPaw/LoreCat) for complex investigations |
+| [`comment-polish`](.opencode/skills/comment-polish/SKILL.md) | domain | Audit and clean comments: remove AI slop, outdated notes, commented-out code; preserve intent and API docs |
+| [`goal-persistence`](.opencode/skills/goal-persistence/SKILL.md) | orchestration | Persist active multi-step goals under `.ai/superpowers/goals/` for cross-session resume |
 | [`change-impact-analysis`](.opencode/skills/change-impact-analysis/SKILL.md) | analysis | Change contract without touching code: current → requested → delta → dependencies → risks → verification plan |
 | [`contract-regression-testing`](.opencode/skills/contract-regression-testing/SKILL.md) | analysis | API/schema/event/serialization/config/CLI compatibility matrix and concrete regression checks before approval |
 | [`bug-flow`](.opencode/skills/bug-flow/SKILL.md) | process | Root-cause-first fix procedure with pre-approval contract and post-approval TDD |

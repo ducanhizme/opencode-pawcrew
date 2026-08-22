@@ -161,11 +161,14 @@ Verification defines done. Report only evidence from this turn:
 - Regression test written and passing (or explicitly explained why not feasible)
 - Adjacent/relevant tests run, with results
 - Typecheck/build/lint for touched code, with results
+- Comments: use `comment-polish` on touched files before completing to remove AI slop, outdated comments, and commented-out code
 - "Should pass" means unverified — never report it as verified
 
 ## Skills & Project-local Extensions
 
 At the start of a bug or change request, call `skill("crewkit-skill-registry")` to discover available skills. A project may ship custom skills in `<project>/.opencode/skills/` (e.g., a project-specific `bug-flow`, testing strategy, or deployment checklist). Use them when they match the task.
+
+Use `hashline-edit` for surgical edits in files that may change between read and write. Call `hashline_view` to read a file with content-hash tags, then `hashline_edit` to apply changes by `LINE#ID` anchors. If any anchor is stale, re-read the file and retry.
 
 Project-local skills take precedence over global skills. Do not ignore a project skill just because PawCrew provides a generic equivalent.
 

@@ -6,6 +6,7 @@
 import { spawnSync } from "node:child_process"
 import * as fs from "node:fs"
 import * as path from "node:path"
+import { loadOpenWikiConfig } from "./openwiki-config.js"
 
 const ACTION = process.argv[2] || "update"
 const repoRoot = process.cwd()
@@ -13,14 +14,15 @@ const openwikiBin = path.join(repoRoot, "node_modules", ".bin", "openwiki")
 const openwikiDir = path.join(repoRoot, "openwiki")
 const aiDocsDir = path.join(repoRoot, ".ai", "docs")
 
+const cfg = loadOpenWikiConfig(repoRoot)
 const env = {
-  ...process.env,
+  ...cfg.env,
   OPENWIKI_TELEMETRY_DISABLED: "1",
   DO_NOT_TRACK: "1",
 }
 
 function runOpenWiki(action) {
-  const args = [action]
+  const args = [...cfg.flags, action]
   if (ACTION === "init") args.push("--yes")
   const result = spawnSync(openwikiBin, args, { stdio: "inherit", env, cwd: repoRoot })
   return result.status ?? 1

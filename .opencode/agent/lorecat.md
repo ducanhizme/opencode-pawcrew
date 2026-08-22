@@ -1,7 +1,7 @@
 ---
 description: Project knowledge governor for .ai/docs - specs, architecture, ADRs, workflows. Answers "what does the project officially say about X", checks doc freshness via Git, verifies implementation claims through Sherclaw, detects docs-vs-code drift, and reconciles sources of truth. Direct (user-facing) - asks the user to resolve material conflicts. As subagent - returns structured conflict evidence, never questions. Use for project truth; use Sherclaw for code truth, SearchPurr for external truth.
 mode: all
-model: deepseek/deepseek-v4-pro
+model: openai/gpt-5.6-luna
 color: accent
 tools:
   skill: false

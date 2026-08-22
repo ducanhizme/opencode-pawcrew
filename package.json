@@ -4,6 +4,9 @@
   "description": "OpenCode PawCrew — native-first agent system with OpenWiki-backed knowledge governance",
   "private": true,
   "type": "module",
+  "bin": {
+    "pawcrew-doctor": "./scripts/pawcrew-doctor.js"
+  },
   "scripts": {
     "wiki:init": "openwiki --init",
     "wiki:update": "openwiki --update",

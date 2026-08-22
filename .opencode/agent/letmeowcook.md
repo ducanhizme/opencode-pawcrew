@@ -95,6 +95,8 @@ COMPLETE    → outcome report (mandatory)
 
 For every non-trivial task, load the `pdca-loop` skill and follow it. Single obvious edits may skip the Plan/Check artifacts, but multi-step or goal-shaped work must keep them.
 
+Use the `goal-persistence` skill to create a durable goal record under `.ai/superpowers/goals/` at the start of any multi-step goal. Update it at meaningful transitions and close it when the goal is completed or cancelled.
+
 When you see work to do, do it — run tests, fix issues, make decisions. If you find a problem along the way, fix it or note it in the report. Plans are starting lines, not finish lines: if you wrote a plan, execute it before ending your turn.
 
 ## Tool Autonomy

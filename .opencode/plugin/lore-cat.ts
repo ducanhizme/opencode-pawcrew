@@ -6,12 +6,64 @@
 // Operates ONLY on <project>/.ai/docs/**. Git usage is read-only.
 
 import * as fs from "node:fs"
+import * as os from "node:os"
 import * as path from "node:path"
 import { execSync, spawnSync } from "node:child_process"
 import { z } from "zod"
 
 type Res = { title: string; output: string }
 type Ctx = { directory?: string }
+
+const HOME = os.homedir()
+
+function readJson(p: string): any {
+  try { return JSON.parse(fs.readFileSync(p, "utf8")) } catch { return null }
+}
+
+function readEnvFile(p: string): Record<string, string> {
+  const out: Record<string, string> = {}
+  try {
+    const text = fs.readFileSync(p, "utf8")
+    for (const line of text.split(/\r?\n/)) {
+      const idx = line.indexOf("=")
+      if (idx === -1 || line.startsWith("#")) continue
+      const key = line.slice(0, idx).trim()
+      let value = line.slice(idx + 1).trim()
+      if (value.startsWith('"') && value.endsWith('"')) value = value.slice(1, -1)
+      if (value.startsWith("'") && value.endsWith("'")) value = value.slice(1, -1)
+      out[key] = value
+    }
+  } catch { /* ignore missing env file */ }
+  return out
+}
+
+function loadOpenWikiConfig(projectRoot: string) {
+  const root = path.resolve(projectRoot || process.cwd())
+  const projectConfig = readJson(path.join(root, ".ai", "openwiki.config.json")) || {}
+  const globalEnv = readEnvFile(path.join(HOME, ".openwiki", ".env"))
+
+  const provider = projectConfig.provider || globalEnv.OPENWIKI_PROVIDER || "openai-compatible"
+  const modelId = projectConfig.modelId || globalEnv.OPENWIKI_MODEL_ID || ""
+  const baseUrl = projectConfig.baseUrl || globalEnv.OPENAI_COMPATIBLE_BASE_URL || ""
+  const apiKey = projectConfig.apiKey || globalEnv.OPENAI_COMPATIBLE_API_KEY || ""
+
+  const env: Record<string, string> = {
+    ...process.env as Record<string, string>,
+    OPENWIKI_PROVIDER: provider,
+    OPENWIKI_MODEL_ID: modelId,
+    OPENAI_COMPATIBLE_BASE_URL: baseUrl,
+    OPENAI_COMPATIBLE_API_KEY: apiKey,
+  }
+
+  for (const key of Object.keys(env)) {
+    if (env[key] === "") delete env[key]
+  }
+
+  const flags: string[] = []
+  if (modelId) flags.push("--modelId", modelId)
+
+  return { env, flags }
+}
 
 function resolveRoot(input: any): string {
   return path.resolve(input?.directory || input?.project || process.cwd())
@@ -48,8 +100,13 @@ function openwikiUsable(root: string): boolean {
 
 function runOpenWiki(root: string, args: string[], input?: string): { ok: boolean; stdout: string; stderr: string } {
   const bin = openwikiPath(root)
-  const env = { ...process.env, OPENWIKI_TELEMETRY_DISABLED: "1", DO_NOT_TRACK: "1" }
-  const result = spawnSync(bin, args, { cwd: root, env, input, encoding: "utf8" })
+  const cfg = loadOpenWikiConfig(root)
+  const env = {
+    ...cfg.env,
+    OPENWIKI_TELEMETRY_DISABLED: "1",
+    DO_NOT_TRACK: "1",
+  }
+  const result = spawnSync(bin, [...cfg.flags, ...args], { cwd: root, env, input, encoding: "utf8" })
   return {
     ok: result.status === 0,
     stdout: result.stdout || "",
