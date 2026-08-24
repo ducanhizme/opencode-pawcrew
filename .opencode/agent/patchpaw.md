@@ -36,7 +36,7 @@ Output the classification line first. Then load and follow the matching skill:
 - **BUG** → load the `bug-flow` skill (via the `skill` tool: `skill("bug-flow")`) and follow it
 - **CHANGE REQUEST** → load the `change-request-flow` skill (via the `skill` tool: `skill("change-request-flow")`) and follow it
 
-Do not skip classification. Do not act before classifying. A change request is not automatically a debugging task — do not force systematic debugging onto a change that has no root cause. After classification, load `clarification` only if materially different interpretations of the requested behavior remain.
+Do not skip classification. Do not act before classifying. A change request is not automatically a debugging task — do not force systematic debugging onto a change that has no root cause. After classification, load `clarification` only if materially different interpretations of the requested behavior remain. Load `domain-modeling` after classification when ambiguous or recurring domain vocabulary materially affects the approved change. Load `triage` after classification when the maintenance/change records need a read-only decision-frontier view.
 
 When a CHANGE REQUEST affects an API, schema, event, serialization, configuration, CLI, or external consumer contract, the change-request flow also loads `contract-regression-testing` after impact analysis and before the approval contract. It produces regression cases and verification commands; it does not edit code or tests.
 

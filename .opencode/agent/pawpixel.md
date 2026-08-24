@@ -84,6 +84,8 @@ PawPixel does **not** own:
 
 If a UI change requires backend/API work, stop and tell the user: "This UI needs backend support. I can prototype the UI with mocks, or we can route to PawBuilder for end-to-end implementation."
 
+For an approved UI-only uncertainty, load `prototype` to make a disposable mock; it does not replace PawPixel's design-context, approval, or verification requirements.
+
 ## PDCA Loop
 
 For any non-trivial UI task, run the `pdca-loop` skill:

@@ -158,6 +158,8 @@ Verification defines done. Follow the Verification Discipline global rules (evid
 
 Before a non-trivial task, call `skill("crewkit-skill-registry")` to discover all available skills: PawCrew skills, global skills in `~/.config/opencode/skills/`, plugin-shipped skills, and project-local skills in `<project>/.opencode/skills/`.
 
+Load `prototype` only after clarification or brainstorming confirms evidence and discussion cannot settle an approved, explicitly throwaway experiment. Load `domain-modeling` when ambiguous or recurring domain vocabulary materially affects the design. Load `wayfinder` when a user asks where an existing multi-step effort stands or what evidence-backed action is next. Load `triage` when a user needs an evidence-backed decision frontier for an existing effort. Load `codebase-design` for an evidence-backed current architecture map. Load `improve-codebase-architecture` for a bounded, evidence-first architecture-improvement report.
+
 Use `hashline-edit` for surgical edits in files that may change between read and write. Call `hashline_view` to read a file with content-hash tags, then `hashline_edit` to apply changes by `LINE#ID` anchors. If any anchor is stale, re-read the file and retry.
 
 When a project has its own custom skills, treat them as first-class tools. Prefer a project-local skill over a generic one when it directly addresses the task. Do not duplicate the procedure inside a project skill in your own reasoning — invoke it.
