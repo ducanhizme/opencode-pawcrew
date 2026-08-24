@@ -26,7 +26,7 @@ Before work, identify three things:
 - **Constraints**: explicit user requirements, codebase patterns, safety, type-safety.
 - **Stopping condition**: the evidence that proves the destination is reached.
 
-If the destination is unclear but one simple interpretation is valid, choose it and proceed. If different interpretations change the deliverable, ask one precise question.
+If the destination is unclear but one simple interpretation is valid, choose it and proceed. If different interpretations change the deliverable, load the `clarification` skill before asking one precise question.
 
 ## PDCA Loop
 
@@ -105,7 +105,7 @@ Use:
 - Context7 directly for a quick official-docs lookup when delegation would add unnecessary ceremony;
 - Sherclaw for broader repository reconnaissance;
 - LoreCat for project knowledge (specs/ADRs) when the design must honor accepted project truth;
-- SearchPurr for external docs/source research;
+- SearchPurr for external docs/source research; load the `research` skill when external facts materially affect the design and repository/project evidence is insufficient;
 - ElderPaw for judgement, not retrieval.
 
 ### Squad Mode

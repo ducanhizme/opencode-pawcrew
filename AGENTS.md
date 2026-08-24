@@ -3,14 +3,14 @@
 A minimal, native-first agent system for OpenCode: six primary agents
 (PawBuilder, PatchPaw, LetMeowCook, PawPixel, LoreCat, Pawfessor), five
 intelligence subagents (Sherclaw, SearchPurr, ElderPaw, JudgeWhiskers,
-GuardClaw), twenty-two custom skills
+GuardClaw), twenty-eight custom skills
 (`ast-grep`, `bug-flow`, `change-impact-analysis`, `change-request-flow`,
-`code-explanation`, `comment-polish`, `contract-regression-testing`,
+`clarification`, `code-explanation`, `comment-polish`, `contract-regression-testing`,
 `crewkit-skill-registry`, `delegation-policy`, `design-md-contract`,
 `frontend-audit`, `frontend-critique`, `frontend-delight`, `frontend-polish`,
-`frontend-taste-router`, `frontend-ui-engineering`, `hashline-edit`,
-`incident-response`, `pdca-loop`, `performance-investigation`,
-`retrospective`, `test-strategy`),
+`frontend-taste-router`, `frontend-ui-engineering`, `handoff`, `hashline-edit`,
+`incident-response`, `pdca-loop`, `performance-investigation`, `research`,
+`retrospective`, `test-strategy`, `to-questionnaire`, `wait-what`, `writing-for-agents`),
 six routing commands (`/build`, `/patch`, `/cook`, `/design`, `/explain`,
 `/lore-cat-save-it`), and four deterministic plugins (`frontend-guardian.ts`,
 `hashline.ts`, `lore-cat.ts`, `superpowers-gate.ts`).
@@ -55,6 +55,7 @@ per-file symlinks (run `./install.sh`).
     ├── bug-flow/SKILL.md
     ├── change-impact-analysis/SKILL.md
     ├── change-request-flow/SKILL.md
+    ├── clarification/SKILL.md
     ├── code-explanation/SKILL.md
     ├── comment-polish/SKILL.md
     ├── contract-regression-testing/SKILL.md
@@ -67,12 +68,17 @@ per-file symlinks (run `./install.sh`).
     ├── frontend-polish/SKILL.md
     ├── frontend-taste-router/SKILL.md
     ├── frontend-ui-engineering/SKILL.md
+    ├── handoff/SKILL.md
     ├── hashline-edit/SKILL.md
     ├── incident-response/SKILL.md
     ├── pdca-loop/SKILL.md                (includes cross-session Goal Records)
     ├── performance-investigation/SKILL.md
+    ├── research/SKILL.md
     ├── retrospective/SKILL.md
-    └── test-strategy/SKILL.md
+    ├── test-strategy/SKILL.md
+    ├── to-questionnaire/SKILL.md
+    ├── wait-what/SKILL.md
+    └── writing-for-agents/SKILL.md
 ```
 
 Native `build` and `plan` are disabled via stub files (`disable: true`). With `build`

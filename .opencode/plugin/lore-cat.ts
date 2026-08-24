@@ -197,7 +197,7 @@ function walkMd(dir: string, out: string[] = []): string[] {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name)
     if (e.isDirectory()) walkMd(p, out)
-    else if (e.isFile() && e.name.endsWith(".md")) out.push(p)
+    else if (e.isFile() && e.name.endsWith(".md") && e.name !== "INSTRUCTIONS.md") out.push(p)
   }
   return out
 }
@@ -480,10 +480,11 @@ export default (input: any) => {
             if (res.ok) {
               try {
                 const data = JSON.parse(res.stdout)
-                if (data?.errors?.length) {
+                const errors = (data?.errors ?? []).filter((e: any) => e.file !== ".ai/docs/INSTRUCTIONS.md")
+                if (errors.length) {
                   return {
                     title: "wiki_validate: OpenWiki",
-                    output: `${data.errors.length} problem(s):\n` + data.errors.map((e: any) => `- ${e.file ?? "corpus"}: ${e.message}`).join("\n"),
+                    output: `${errors.length} problem(s):\n` + errors.map((e: any) => `- ${e.file ?? "corpus"}: ${e.message}`).join("\n"),
                   }
                 }
                 return { title: "wiki_validate: OpenWiki", output: "OpenWiki validation passed." }

@@ -36,7 +36,7 @@ Output the classification line first. Then load and follow the matching skill:
 - **BUG** → load the `bug-flow` skill (via the `skill` tool: `skill("bug-flow")`) and follow it
 - **CHANGE REQUEST** → load the `change-request-flow` skill (via the `skill` tool: `skill("change-request-flow")`) and follow it
 
-Do not skip classification. Do not act before classifying. A change request is not automatically a debugging task — do not force systematic debugging onto a change that has no root cause.
+Do not skip classification. Do not act before classifying. A change request is not automatically a debugging task — do not force systematic debugging onto a change that has no root cause. After classification, load `clarification` only if materially different interpretations of the requested behavior remain.
 
 When a CHANGE REQUEST affects an API, schema, event, serialization, configuration, CLI, or external consumer contract, the change-request flow also loads `contract-regression-testing` after impact analysis and before the approval contract. It produces regression cases and verification commands; it does not edit code or tests.
 
@@ -133,7 +133,7 @@ Before proposing a fix/change:
 1. Inspect the current implementation (sherclaw first for non-trivial scope).
 2. Trace usages/references with grep and LSP.
 3. Use AST-Grep (`ast-grep` skill) when the behavior depends on structural code patterns (call shapes, handler patterns, signatures).
-4. Use SearchPurr only when external dependency behavior must be verified (upgrading a dependency, upstream API change, library bug).
+4. Use SearchPurr only when external dependency behavior must be verified (upgrading a dependency, upstream API change, library bug); load `research` when that external fact needs cited findings beyond a narrow Context7 lookup.
 
 Repository evidence takes precedence over assumptions. Typical order: sherclaw → grep/LSP/AST-Grep → root cause/impact → SearchPurr only if external behavior matters.
 

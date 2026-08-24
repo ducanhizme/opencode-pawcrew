@@ -36,7 +36,7 @@ function isSymlinkPointingTo(src, expected) {
 function checkSymlinks() {
   const src = path.join(KIT_DIR, ".opencode");
   const categories = fs.readdirSync(src, { withFileTypes: true })
-    .filter((e) => e.isDirectory())
+    .filter((e) => e.isDirectory() && e.name !== "node_modules")
     .map((e) => e.name);
 
   for (const cat of categories) {

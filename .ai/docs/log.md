@@ -13,3 +13,5 @@
 - 2026-08-18 — updated: `.ai/docs/architecture/crewkit-architecture.md`
 - 2026-08-19 — updated: `.ai/docs/architecture/crewkit-architecture.md`, `.ai/docs/specs/agent-prompt-contract.md`, `.ai/docs/workflows/installation.md`
 - 2026-08-22 — updated: `.ai/docs/references/openwiki-per-project-config.md`, `.ai/docs/index.md`, `scripts/openwiki-config.js`, `scripts/openwiki-run.js`, `scripts/openwiki-bootstrap.js`, `.opencode/plugin/lore-cat.ts`, `.ai/openwiki.config.schema.json`, `.ai/openwiki.config.json`
+- 2026-08-24 — updated: `.ai/docs/references/ai-hero-capability-map.md`
+- 2026-08-24 — updated: `.ai/docs/INSTRUCTIONS.md`, `.ai/docs/references/ai-hero-capability-map.md`
