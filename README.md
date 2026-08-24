@@ -153,6 +153,7 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
 <table width="100%">
   <tr>
     <td width="30%" align="center" valign="top">
+      <img src="images/pawfessor.png" width="200" style="border-radius: 12px;">
       <br><sub><i>Sherclaw gives the facts. I give the understanding.</i></sub>
     </td>
     <td width="70%" valign="top">
@@ -282,8 +283,8 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
 ### Global install (recommended for a single machine)
 
 ```bash
-git clone https://github.com/duwscan/opencode-crewkit.git
-cd opencode-crewkit
+git clone https://github.com/ducanhizme/opencode-pawcrew.git
+cd opencode-pawcrew
 npm install          # installs OpenWiki for LoreCat knowledge generation
 ./install.sh
 ```
@@ -691,8 +692,8 @@ for OMO-derived prompt content preserved in [THIRD-PARTY-NOTICES.md](THIRD-PARTY
 
 <div align="center">
 
-**[Report a bug](https://github.com/duwscan/opencode-crewkit/issues)** ·
-**[Request an agent](https://github.com/duwscan/opencode-crewkit/issues)** ·
+**[Report a bug](https://github.com/ducanhizme/opencode-pawcrew/issues)** ·
+**[Request an agent](https://github.com/ducanhizme/opencode-pawcrew/issues)** ·
 Made with ☕ and too many agent frameworks
 
 </div>
