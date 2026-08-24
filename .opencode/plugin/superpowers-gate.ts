@@ -30,6 +30,7 @@ const STRIP_AGENTS = new Set([
   "letmeowcook",
   "judgewhiskers",
   "guardclaw",
+  "pawfessor",
   // native agents replaced by crewkit agents
   "general",
   "scout",

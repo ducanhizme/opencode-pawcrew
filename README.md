@@ -53,7 +53,7 @@ For frontend work, PawPixel adds a closed token layer: `DESIGN.md` is the design
 
 ## Why PawCrew
 
-- **Role clarity over role explosion** — four primary agents, five specialists, each with one job, one approval policy, and one completion contract. No agent-of-agents. No hidden runtime.
+- **Role clarity over role explosion** — six primary agents, five specialists, each with one job, one approval policy, and one completion contract. No agent-of-agents. No hidden runtime.
 - **Native OpenCode** — agents, commands, skills, and permissions live in standard OpenCode config. No scheduler, no router, no custom orchestration layer to maintain.
 - **Approval at the right gates** — PawBuilder stops at material design decisions, PatchPaw stops before the diff, LetMeowCook runs autonomously and reports at the end.
 - **OpenWiki-backed knowledge governance** — LoreCat owns `.ai/docs` as the project truth corpus. Generation, update, and validation delegate to OpenWiki when installed; drift detection, source-of-truth reconciliation, and sanctioned write paths remain deterministic PawCrew behavior.
@@ -148,6 +148,23 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
   <tr><td colspan="2"><b>Default Model:</b> <code>openai/gpt-5.6-luna</code></td></tr>
   <tr><td colspan="2"><b>Recommended Models:</b> `openai/gpt-5.6-luna` `cliproxy/gpt-5.6-sol` `google-vertex/gemini-3.5-flash`</td></tr>
   <tr><td colspan="2"><b>Model Guidance:</b> Choose a model with strong visual reasoning, design-system discipline, and coding accuracy. PawPixel must read context, pick a taste, and produce working UI, so instruction-following and attention to aesthetic details matter more than raw speed.</td></tr>
+</table>
+
+<table width="100%">
+  <tr>
+    <td width="30%" align="center" valign="top">
+      <br><sub><i>Sherclaw gives the facts. I give the understanding.</i></sub>
+    </td>
+    <td width="70%" valign="top">
+      Pawfessor is the code explainer and documentation narrator. It classifies every request into an explanation mode (summarize, narrate, trace, map, diagnose, compare), dispatches the intelligence subagents for evidence, then interprets that evidence into natural-language explanations anchored to file:line. It generates doc comments and explanation documents — with editorial diagrams via the external <code>diagram-design</code> skill when installed — but never touches code logic.
+    </td>
+  </tr>
+  <tr><td colspan="2"><b>Role:</b> <code>Code Explainer & Documentation Narrator</code></td></tr>
+  <tr><td colspan="2"><b>Tagline:</b> "Understand first, fix later."</td></tr>
+  <tr><td colspan="2"><b>Prompt:</b> <a href=".opencode/agent/pawfessor.md"><code>pawfessor.md</code></a></td></tr>
+  <tr><td colspan="2"><b>Default Model:</b> <code>openai/gpt-5.6-luna</code></td></tr>
+  <tr><td colspan="2"><b>Recommended Models:</b> `openai/gpt-5.6-luna` `cliproxy/gpt-5.6-sol` `ollama-cloud/glm-5.2`</td></tr>
+  <tr><td colspan="2"><b>Model Guidance:</b> Choose a model with strong long-context reading and precise natural-language synthesis. Pawfessor interprets evidence rather than generating code, so faithful grounding and clear multilingual prose matter more than coding throughput.</td></tr>
 </table>
 
 <table width="100%">
@@ -301,6 +318,7 @@ Then **restart opencode** (config is not hot-reloaded) and pick your entry point
 | `/patch <bug or change>` | PatchPaw | Bugs, regressions, bounded behavior changes |
 | `/cook <goal>` | LetMeowCook | Migrations, upgrades, "make CI pass" |
 | `/design <UI request>` | PawPixel | Pages, components, redesigns, design systems, UI audits |
+| `/explain <code question>` | Pawfessor | Explanations, walkthroughs, traces, dependency maps, diff/bug explanations, doc generation |
 | `/lore-cat-save-it` | LoreCat | Persist this conversation's knowledge into `.ai/docs` (verified, normalized, linked — not chat dumps) |
 | `/doctor` | (tooling) | Check PawCrew installation: symlinks, plugins, OpenWiki, AST-Grep, repo state |
 
@@ -328,16 +346,16 @@ PawCrew delegates OpenWiki generation/update/validation to the `openwiki` CLI. E
 
 Agents get tools by responsibility — the cheapest precise tool wins.
 
-| Capability | PawBuilder | PatchPaw | LetMeowCook | LoreCat | Sherclaw | SearchPurr | ElderPaw | Reviewer |
-|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Read / Glob / Grep / LSP | ✅ | ✅ | ✅ | docs+git | ✅ | 📄 | ✅ | ✅ |
-| AST-Grep (`sg`) | ✅ | ✅ | ✅ | ❌ | 🔍 no-rewrite | ❌ | optional | ✅ |
-| Context7 (official docs) | light | via SearchPurr | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
-| Exa (broad web) | via SearchPurr | via SearchPurr | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
-| Public/GitHub code search | via SearchPurr | via SearchPurr | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
-| Wiki tools (`.ai/docs`) | via LoreCat | via LoreCat | via LoreCat | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Edit | approval-gated | approval-gated | ✅ | ❌ (wiki tools only) | ❌ | ❌ | ❌ | ❌ |
-| Run tests / typecheck | ✅ | ✅ | ✅ | git read-only | git/sg only | ❌ | git/sg only | ✅ |
+| Capability | PawBuilder | PatchPaw | LetMeowCook | PawPixel | Pawfessor | LoreCat | Sherclaw | SearchPurr | ElderPaw | Reviewer |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Read / Glob / Grep / LSP | ✅ | ✅ | ✅ | ✅ | ✅ | docs+git | ✅ | 📄 | ✅ | ✅ |
+| AST-Grep (`sg`) | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | 🔍 no-rewrite | ❌ | optional | ✅ |
+| Context7 (official docs) | light | via SearchPurr | ✅ | via SearchPurr | via SearchPurr | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Exa (broad web) | via SearchPurr | via SearchPurr | ✅ | via SearchPurr | via SearchPurr | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Public/GitHub code search | via SearchPurr | via SearchPurr | ✅ | via SearchPurr | via SearchPurr | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Wiki tools (`.ai/docs`) | via LoreCat | via LoreCat | via LoreCat | via LoreCat | via LoreCat | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Edit | approval-gated | approval-gated | ✅ | ✅ | docs/comments only | ❌ (wiki tools only) | ❌ | ❌ | ❌ | ❌ |
+| Run tests / typecheck | ✅ | ✅ | ✅ | ✅ | read-only | git read-only | git/sg only | ❌ | git/sg only | ✅ |
 
 **Search escalation policy** (shared across agents): exact text → `grep` · files →
 `glob` · symbols/references → `LSP` · code shape → `AST-Grep` · official docs →
@@ -367,6 +385,7 @@ a hard block on `sg --update-all` (no rewrites from a read-only investigator).
 | [`contract-regression-testing`](.opencode/skills/contract-regression-testing/SKILL.md) | analysis | API/schema/event/serialization/config/CLI compatibility matrix and concrete regression checks before approval |
 | [`bug-flow`](.opencode/skills/bug-flow/SKILL.md) | process | Root-cause-first fix procedure with pre-approval contract and post-approval TDD |
 | [`change-request-flow`](.opencode/skills/change-request-flow/SKILL.md) | process | Impact-analysis-first procedure for bounded behavior/API changes with mandatory knowledge sync |
+| [`code-explanation`](.opencode/skills/code-explanation/SKILL.md) | domain | Pawfessor's procedure: six explanation modes, evidence dispatch rules, diagram deliverables (diagram-design + mermaid fallback), limited-write doc contract |
 | [`crewkit-skill-registry`](.opencode/skills/crewkit-skill-registry/SKILL.md) | tooling | Discover all available skills: project-local, global user, plugin-shipped, and kit skills |
 | [`delegation-policy`](.opencode/skills/delegation-policy/SKILL.md) | policy | Canonical subagent dispatch targets, review dispatch rules, and dispatch mechanics |
 | [`pdca-loop`](.opencode/skills/pdca-loop/SKILL.md) | process | Deming PDCA loop: Plan Record → Run Log → Check Record → Knowledge Sync + Retrospective |
@@ -379,6 +398,23 @@ ceremony is not. JudgeWhiskers is scoped the inverse way: skill access is
 default-deny with exactly two allows — `requesting-code-review` and
 `receiving-code-review` — since it is the dispatch target of the Superpowers
 review flow.
+
+### Optional: editorial diagrams for Pawfessor
+
+When a user asks Pawfessor to draw a diagram and save the explanation as
+markdown, it uses the external
+[`diagram-design`](https://github.com/cathrynlavery/diagram-design) skill (MIT)
+if installed — 39 editorial diagram types as self-contained HTML + SVG.
+Without it, Pawfessor falls back to embedded mermaid blocks and says so.
+Install it once, globally (clone to a persistent location, then symlink):
+
+```bash
+git clone https://github.com/cathrynlavery/diagram-design.git ~/me/personal-agent-kit/diagram-design
+ln -sfn ~/me/personal-agent-kit/diagram-design/skills/diagram-design ~/.config/opencode/skills/diagram-design
+```
+
+Update later with `git -C ~/me/personal-agent-kit/diagram-design pull`. The
+skill is never vendored into this kit; detection + fallback is the contract.
 
 ## PDCA loop
 

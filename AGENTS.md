@@ -1,12 +1,15 @@
 # OpenCode PawCrew
 
-A minimal, native-first agent system for OpenCode: four primary agents
-(PawBuilder, PatchPaw, LetMeowCook, LoreCat), five intelligence subagents
-(Sherclaw, SearchPurr, ElderPaw, JudgeWhiskers, GuardClaw), nine custom skills
+A minimal, native-first agent system for OpenCode: six primary agents
+(PawBuilder, PatchPaw, LetMeowCook, PawPixel, LoreCat, Pawfessor), five
+intelligence subagents (Sherclaw, SearchPurr, ElderPaw, JudgeWhiskers,
+GuardClaw), ten custom skills
 (`ast-grep`, `bug-flow`, `change-impact-analysis`, `change-request-flow`,
-`contract-regression-testing`, `crewkit-skill-registry`, `delegation-policy`, `pdca-loop`, `retrospective`),
-four routing commands (`/build`, `/patch`, `/cook`, `/lore-cat-save-it`), and two
-deterministic plugins (`lore-cat.ts`, `superpowers-gate.ts`).
+`code-explanation`, `contract-regression-testing`, `crewkit-skill-registry`,
+`delegation-policy`, `pdca-loop`, `retrospective`),
+six routing commands (`/build`, `/patch`, `/cook`, `/design`, `/explain`,
+`/lore-cat-save-it`), and four deterministic plugins (`frontend-guardian.ts`,
+`hashline.ts`, `lore-cat.ts`, `superpowers-gate.ts`).
 
 Four truths: CODE → Sherclaw · PROJECT → LoreCat (.ai/docs) · EXTERNAL →
 SearchPurr · JUDGEMENT → ElderPaw.
@@ -22,6 +25,8 @@ per-file symlinks (run `./install.sh`).
 │   ├── pawbuilder.md    primary — collaborative feature engineer (Superpowers + approval gates)
 │   ├── patchpaw.md     primary — change-controlled maintenance (investigate → propose → approve → fix)
 │   ├── letmeowcook.md    primary — autonomous executor (goal ownership + outcome report)
+│   ├── pawpixel.md     primary — frontend & UI specialist (DESIGN.md contract + taste skills)
+│   ├── pawfessor.md    primary — code explainer (evidence → natural-language understanding, doc generation)
 │   ├── lorecat.md      all (primary+subagent) — project knowledge governor (.ai/docs, two reconciliation modes)
 │   ├── sherclaw.md     subagent — read-only internal code investigator
 │   ├── searchpurr.md    subagent — external docs/source researcher
@@ -35,6 +40,8 @@ per-file symlinks (run `./install.sh`).
 │   ├── build.md        → pawbuilder
 │   ├── patch.md        → patchpaw
 │   ├── cook.md         → letmeowcook
+│   ├── design.md       → pawpixel
+│   ├── explain.md      → pawfessor
 │   └── lore-cat-save-it.md → lorecat
 ├── plugin/
 │   ├── lore-cat.ts         deterministic knowledge tools (wiki_search/read/freshness/save_concept/validate/sync)
@@ -44,6 +51,7 @@ per-file symlinks (run `./install.sh`).
  ├── bug-flow/SKILL.md
  ├── change-impact-analysis/SKILL.md
  ├── change-request-flow/SKILL.md
+ ├── code-explanation/SKILL.md
  ├── contract-regression-testing/SKILL.md
  ├── crewkit-skill-registry/SKILL.md
  ├── delegation-policy/SKILL.md
@@ -79,6 +87,15 @@ for an explicit security review or high-risk security boundary (auth/authz, secr
 payments, untrusted input, filesystem/network/deserialization, sensitive data); it never
 replaces ordinary `judgewhiskers` review.
 
+`pawfessor` is the synthesis counterpart to `sherclaw`: Sherclaw returns raw
+evidence (WHERE/WHAT) and is forbidden from interpreting; Pawfessor dispatches
+Sherclaw (and LoreCat/SearchPurr/ElderPaw) for evidence, then interprets it
+into natural-language explanations, traces, maps, and documentation. Pawfessor
+is read-only on code logic; its writes are limited to doc comments, `*.md`
+documentation, `docs/explanations/**`, and OpenAPI specs — never `.ai/docs/**`
+(LoreCat's corpus). Diagram deliverables use the external `diagram-design`
+skill when installed, with an embedded-mermaid fallback.
+
 ## Core separation (do not violate)
 
 - **Agent prompt** = identity, authority, boundaries, delegation policy, approval policy, completion contract
@@ -95,13 +112,13 @@ External intelligence: Context7 MCP (official docs), Exa MCP (broad web, needs
 `EXA_API_KEY` + `enabled: true`), GitHub/public code search (`gh search code` —
 vendor-neutral "public code search" in prompts; no hard-coded grep.app dependency).
 
-| Capability | PawBuilder | PatchPaw | LetMeowCook | Sherclaw | SearchPurr | ElderPaw |
-|---|---|---|---|---|---|---|
-| Local tools (read/glob/grep/LSP) | yes | yes | yes | yes | read-only manifests | grep/read |
-| AST-Grep | yes | yes | yes | yes (no rewrite) | no | optional (no rewrite) |
-| Context7 | lightweight | via SearchPurr | yes | no | yes | no |
-| Exa / web search | via SearchPurr | via SearchPurr | yes | no | yes | no |
-| Public code search | via SearchPurr | via SearchPurr | yes | no | yes | no |
+| Capability | PawBuilder | PatchPaw | LetMeowCook | Pawfessor | Sherclaw | SearchPurr | ElderPaw |
+|---|---|---|---|---|---|---|---|
+| Local tools (read/glob/grep/LSP) | yes | yes | yes | yes | yes | read-only manifests | grep/read |
+| AST-Grep | yes | yes | yes | yes | yes (no rewrite) | no | optional (no rewrite) |
+| Context7 | lightweight | via SearchPurr | yes | via SearchPurr | no | yes | no |
+| Exa / web search | via SearchPurr | via SearchPurr | yes | via SearchPurr | no | yes | no |
+| Public code search | via SearchPurr | via SearchPurr | yes | via SearchPurr | no | yes | no |
 
 MCP servers live in `~/.config/opencode/opencode.jsonc` (not symlinked from this
 repo — it is the user's global config). install.sh checks they are registered.
@@ -118,7 +135,8 @@ message of every session step — including subagent sessions — because its
 hook receives no agent context. `superpowers-gate.ts` runs after superpowers
 (auto-discovered plugins register after config-declared ones) and splices the
 bootstrap out for a strip-list of agents: sherclaw, searchpurr, elderpaw,
-lorecat, letmeowcook, judgewhiskers, guardclaw, native general/scout/explore, and
+lorecat, letmeowcook, judgewhiskers, guardclaw, pawfessor, native
+general/scout/explore, and
 title/summary/compaction (defense-in-depth — hidden agents currently use a
 separate LLM path that bypasses the transform). Allow-by-default: unknown
 agents keep the bootstrap. If upstream changes the bootstrap format, the gate
@@ -189,9 +207,9 @@ or proposed kit improvements.
   omitted from context). JudgeWhiskers uses `permission.skill` default-deny
   with exactly two allows — `requesting-code-review` and
   `receiving-code-review` (the Superpowers review procedure it is dispatched
-  by). Sherclaw/LetMeowCook keep the skill tool for domain
-  skills (ast-grep, docker, ...) but deny all 14 Superpowers process skills
-  via `permission.skill` patterns. PawBuilder/PatchPaw use Superpowers freely.
+  by). Sherclaw/LetMeowCook/Pawfessor keep the skill tool for domain
+  skills (ast-grep, code-explanation, ...) but deny all 14 Superpowers process
+  skills via `permission.skill` patterns. PawBuilder/PatchPaw use Superpowers freely.
 
 ## Install / update
 

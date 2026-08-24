@@ -247,6 +247,19 @@ check_openwiki() {
   fi
 }
 
+check_diagram_design() {
+  echo
+  if [[ -f "$DEST/skills/diagram-design/SKILL.md" ]]; then
+    echo "diagram-design skill: installed at $DEST/skills/diagram-design."
+  else
+    echo "WARNING: diagram-design skill not found in $DEST/skills/."
+    echo "         Pawfessor diagram deliverables fall back to embedded mermaid."
+    echo "         Install (optional):"
+    echo "           git clone https://github.com/cathrynlavery/diagram-design.git ~/me/personal-agent-kit/diagram-design"
+    echo "           ln -sfn ~/me/personal-agent-kit/diagram-design/skills/diagram-design $DEST/skills/diagram-design"
+  fi
+}
+
 check_superpowers() {
   local cfg_found=0 cache_found=0 cfg
   for cfg in "$DEST/opencode.json" "$DEST/opencode.jsonc"; do
@@ -335,6 +348,7 @@ check_ast_grep
 check_mcp
 check_lorecat_plugin
 check_openwiki
+check_diagram_design
 append_global_rules
 
 echo

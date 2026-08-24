@@ -153,6 +153,19 @@ function checkAstGrep() {
   }
 }
 
+function checkDiagramDesign() {
+  const skill = path.join(GLOBAL_CONFIG, "skills", "diagram-design", "SKILL.md");
+  if (fs.existsSync(skill)) {
+    log("diagram-design skill", "OK", skill);
+  } else {
+    log(
+      "diagram-design skill",
+      "WARN",
+      "not installed; Pawfessor diagram deliverables fall back to embedded mermaid",
+    );
+  }
+}
+
 function checkKitRepo() {
   const gitDir = path.join(KIT_DIR, ".git");
   if (fs.existsSync(gitDir)) {
@@ -180,6 +193,7 @@ function main() {
   checkPluginsExist();
   checkOpenWiki();
   checkAstGrep();
+  checkDiagramDesign();
   checkKitRepo();
 
   console.log("OK:");

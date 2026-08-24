@@ -17,6 +17,7 @@ Run `bunx pawcrew-doctor` (or `node scripts/pawcrew-doctor.js` from the kit repo
 | Plugins | `lore-cat.ts`, `superpowers-gate.ts`, `frontend-guardian.ts`, `hashline.ts` exist in kit |
 | OpenWiki | `openwiki` CLI present and `.ai/.openwiki-bridge.json` exists |
 | AST-Grep | `sg` / `ast-grep` in PATH and working |
+| diagram-design | Optional skill for Pawfessor diagram deliverables (mermaid fallback when missing) |
 | Kit repo | Is a git repo and whether it has uncommitted changes |
 
 ## Usage
