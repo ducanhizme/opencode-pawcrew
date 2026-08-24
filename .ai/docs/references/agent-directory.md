@@ -60,9 +60,9 @@ Danh bạ đầy đủ các agent trong CrewKit, theo `.opencode/agent/`.
 - PawPixel dùng plugin `frontend-guardian.ts` (`frontend_guardian_check`) để kiểm tra DESIGN.md, độ dài file component, và màu sắc hardcoded sau khi chỉnh sửa UI.
 - PawBuilder/PatchPaw dùng plugin `hashline.ts` (`hashline_view` / `hashline_edit`) để edit file bằng content-hash anchors, tránh lỗi stale-line khi file thay đổi giữa read và write.
 - Command `/doctor` chạy `scripts/pawcrew-doctor.js` để kiểm tra symlink, plugin registration, OpenWiki, AST-Grep, và trạng thái kit repo.
-- PawBuilder dùng skill `squad-mode` để dispatch 2–3 subagents song song khi nhiệm vụ phức tạp có nhiều chiều độc lập cần investigate.
+- PawBuilder dùng section **Parallel dispatch (squad pattern)** của skill `delegation-policy` để dispatch 2–3 subagents song song khi nhiệm vụ phức tạp có nhiều chiều độc lập cần investigate.
 - PawBuilder/PatchPaw/PawPixel dùng skill `comment-polish` trong verification để audit và làm sạch comments trước khi hoàn thành.
-- PawBuilder và LetMeowCook dùng skill `goal-persistence` để lưu multi-step goals dưới `.ai/superpowers/goals/` và cập nhật trạng thái qua các session.
+- PawBuilder và LetMeowCook dùng section **Goal Record (cross-session persistence)** của skill `pdca-loop` để lưu multi-step goals dưới `.ai/superpowers/goals/` và cập nhật trạng thái qua các session (CLI helper: `scripts/goal-persistence.js`).
 
 ## Bốn truths — ai trả lời gì
 

@@ -1,6 +1,6 @@
 ---
 name: contract-regression-testing
-description: Build a regression-test contract for API, schema, event, serialization, configuration, or CLI behavior changes. Use after change-impact analysis and before approval when a change can break callers, consumers, persisted data, or external integrations. Produces the current contract, compatibility matrix, consumer test cases, migration checks, and verification commands without modifying code.
+description: Build a regression-test contract for API, schema, event, serialization, configuration, or CLI behavior changes, including data migrations (dual-write, backfill, mixed-version, rollback). Use after change-impact analysis and before approval when a change can break callers, consumers, persisted data, or external integrations. Produces the current contract, compatibility matrix, consumer test cases, migration checks, and verification commands without modifying code.
 ---
 
 # Contract Regression Testing
@@ -49,6 +49,18 @@ For every affected surface, consider the applicable checks:
 
 Do not require every check for every change. Mark each as `required`, `recommended`, or `not applicable` with a reason.
 
+## Data-Migration Checklist
+
+Use this section when the change involves persisted data movement or transformation — database upgrades (e.g. MySQL 5.7 → 8), schema rebuilds, column splits/merges, encoding changes, backfills, or storage engine swaps. Each phase below must have an explicit answer in the output; "not applicable" requires a reason.
+
+1. **Dual-write** — during transition, is the new shape written alongside the old? Define: which writer, which reader, and the invariant that both shapes stay consistent. Include a check that detects divergence (reconciliation query or checksum).
+2. **Backfill** — how does historical data reach the new shape? Define: batch size, idempotency (re-running a batch must not corrupt), resumability after interruption, and a completion proof (row counts / checksum before vs after).
+3. **Mixed-version** — while old and new code run simultaneously (rolling deploy), both must read both shapes. Include: old-code-reads-new-data case and new-code-reads-old-data case. If either fails, the rollout needs a flag or a stop-the-world step — say which.
+4. **Rollback** — the migration must be reversible or explicitly declared irreversible with user approval. Define: what happens to data written in the new shape if we roll back, and the restore path (backup, reverse migration, dual-read tolerance).
+5. **Cutover criteria** — the observable conditions that authorize switching readers to the new shape (backfill complete + reconciliation clean + mixed-version window elapsed).
+
+Phase ordering is fixed: dual-write → backfill → mixed-version verification → cutover → old-shape cleanup. A plan that skips a phase must justify the skip in the output.
+
 ## Output Format
 
 Return this labeled structure to the calling agent:
@@ -71,6 +83,8 @@ Return this labeled structure to the calling agent:
 - [required|recommended|n/a] <case> — <expected assertion and reason>
 
 **Mixed-version / rollback checks:** <cases, or n/a with reason>
+
+**Data-migration phases:** <dual-write / backfill / mixed-version / rollback / cutover answers per the checklist, or n/a with reason>
 
 **Knowledge impact:** <affected .ai/docs paths and VERIFY_ONLY|UPDATE|CREATE|none>
 

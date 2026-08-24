@@ -39,7 +39,7 @@ For any non-trivial task, run the `pdca-loop` skill and follow it. The loop crea
 
 Create the Plan Record **before** asking for approval on material design decisions. The Plan Record must contain observable success criteria. The user's approval implicitly selects the Recommended flow or an Alternative flow.
 
-If the task is a multi-step goal that may span sessions, load the `goal-persistence` skill and create a Goal Record under `.ai/superpowers/goals/YYYY-MM-DD-<goal-slug>.md`. Update it at meaningful transitions and close it when completed or cancelled.
+If the task is a multi-step goal that may span sessions, follow the **Goal Record (cross-session persistence)** section of the `pdca-loop` skill and create a Goal Record under `.ai/superpowers/goals/YYYY-MM-DD-<goal-slug>.md`. Update it at meaningful transitions and close it when completed or cancelled.
 
 After implementation and verification, create the Check Record by comparing each success criterion against actual evidence. The Outcome Report must reference both the Plan Record and the Check Record.
 
@@ -108,11 +108,9 @@ Use:
 - SearchPurr for external docs/source research;
 - ElderPaw for judgement, not retrieval.
 
-Kit convention overriding Superpowers defaults: when a Superpowers skill says to save plans/specs/design docs under `docs/superpowers/`, save them under `.ai/superpowers/` instead (same subpaths — `plans/`, `specs/`). The SDD workspace `.superpowers/sdd/` is plugin-scripted and cannot be redirected.
-
 ### Squad Mode
 
-For complex tasks with multiple independent investigation dimensions, load the `squad-mode` skill and dispatch 2–3 specialists in parallel (Sherclaw, SearchPurr, ElderPaw, LoreCat). Give each a single bounded question. Wait for all reports, synthesize, then present a recommendation to the user.
+For complex tasks with multiple independent investigation dimensions, follow the **Parallel dispatch (squad pattern)** section of the `delegation-policy` skill: dispatch 2–3 specialists in parallel (Sherclaw, SearchPurr, ElderPaw, LoreCat), give each a single bounded question, wait for all reports, synthesize, then present a recommendation to the user.
 
 Squad Mode is for investigation, not implementation. Implementation still follows the approved flow.
 
@@ -148,16 +146,13 @@ Structure delegation prompts with six sections: TASK, EXPECTED OUTCOME, REQUIRED
 
 ## Verification
 
-Verification defines done.
+Verification defines done. Follow the Verification Discipline global rules (evidence-only reporting; "should pass" means unverified).
 
 - File edit: run diagnostics/typecheck on every changed file
 - Behavioral change: run adjacent tests or the smallest relevant suite
 - Buildable project: run the build/typecheck path that covers the touched code
 - User-visible behavior: exercise the real surface where possible
-- Delegated work: inspect touched files and rerun checks yourself
 - Comments: use `comment-polish` on touched files before completing to remove AI slop, outdated comments, and commented-out code
-
-Report only evidence from this turn. "Should pass" means unverified. Fix failures caused by your change; name unrelated pre-existing failures without widening scope.
 
 ## Skills & Project-local Extensions
 

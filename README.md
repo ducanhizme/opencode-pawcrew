@@ -156,7 +156,7 @@ A small crew with explicit authority boundaries. No agent-of-agents, no hidden r
       <br><sub><i>Sherclaw gives the facts. I give the understanding.</i></sub>
     </td>
     <td width="70%" valign="top">
-      Pawfessor is the code explainer and documentation narrator. It classifies every request into an explanation mode (summarize, narrate, trace, map, diagnose, compare), dispatches the intelligence subagents for evidence, then interprets that evidence into natural-language explanations anchored to file:line. It generates doc comments and explanation documents — with editorial diagrams via the external <code>diagram-design</code> skill when installed — but never touches code logic.
+      Pawfessor is the code explainer and documentation narrator. It classifies every request into an explanation mode (summarize, narrate, trace, map, diagnose, compare, black-box), dispatches the intelligence subagents for evidence, then interprets that evidence into natural-language explanations anchored to file:line. It generates doc comments and explanation documents — with editorial diagrams via the external <code>diagram-design</code> skill when installed — but never touches code logic.
     </td>
   </tr>
   <tr><td colspan="2"><b>Role:</b> <code>Code Explainer & Documentation Narrator</code></td></tr>
@@ -378,17 +378,18 @@ a hard block on `sg --update-all` (no rewrites from a read-only investigator).
 | [`frontend-polish`](.opencode/skills/frontend-polish/SKILL.md) | domain | Final consistency and micro-detail pass before shipping UI |
 | [`frontend-delight`](.opencode/skills/frontend-delight/SKILL.md) | domain | Tasteful motion and personality once fundamentals are solid |
 | [`hashline-edit`](.opencode/skills/hashline-edit/SKILL.md) | domain | Surgical hash-anchored file edits (`LINE#ID`) to avoid stale-line errors and silent corruption |
-| [`squad-mode`](.opencode/skills/squad-mode/SKILL.md) | orchestration | Lightweight parallel subagent dispatch (Sherclaw/SearchPurr/ElderPaw/LoreCat) for complex investigations |
 | [`comment-polish`](.opencode/skills/comment-polish/SKILL.md) | domain | Audit and clean comments: remove AI slop, outdated notes, commented-out code; preserve intent and API docs |
-| [`goal-persistence`](.opencode/skills/goal-persistence/SKILL.md) | orchestration | Persist active multi-step goals under `.ai/superpowers/goals/` for cross-session resume |
 | [`change-impact-analysis`](.opencode/skills/change-impact-analysis/SKILL.md) | analysis | Change contract without touching code: current → requested → delta → dependencies → risks → verification plan |
-| [`contract-regression-testing`](.opencode/skills/contract-regression-testing/SKILL.md) | analysis | API/schema/event/serialization/config/CLI compatibility matrix and concrete regression checks before approval |
+| [`contract-regression-testing`](.opencode/skills/contract-regression-testing/SKILL.md) | analysis | API/schema/event/serialization/config/CLI compatibility matrix and concrete regression checks before approval, incl. data-migration phases (dual-write, backfill, mixed-version, rollback, cutover) |
 | [`bug-flow`](.opencode/skills/bug-flow/SKILL.md) | process | Root-cause-first fix procedure with pre-approval contract and post-approval TDD |
 | [`change-request-flow`](.opencode/skills/change-request-flow/SKILL.md) | process | Impact-analysis-first procedure for bounded behavior/API changes with mandatory knowledge sync |
-| [`code-explanation`](.opencode/skills/code-explanation/SKILL.md) | domain | Pawfessor's procedure: six explanation modes, evidence dispatch rules, diagram deliverables (diagram-design + mermaid fallback), limited-write doc contract |
+| [`code-explanation`](.opencode/skills/code-explanation/SKILL.md) | domain | Pawfessor's procedure: seven explanation modes (incl. black-box reverse-engineering), evidence dispatch rules, diagram deliverables (diagram-design + mermaid fallback), limited-write doc contract |
 | [`crewkit-skill-registry`](.opencode/skills/crewkit-skill-registry/SKILL.md) | tooling | Discover all available skills: project-local, global user, plugin-shipped, and kit skills |
-| [`delegation-policy`](.opencode/skills/delegation-policy/SKILL.md) | policy | Canonical subagent dispatch targets, review dispatch rules, and dispatch mechanics |
-| [`pdca-loop`](.opencode/skills/pdca-loop/SKILL.md) | process | Deming PDCA loop: Plan Record → Run Log → Check Record → Knowledge Sync + Retrospective |
+| [`delegation-policy`](.opencode/skills/delegation-policy/SKILL.md) | policy | Canonical subagent dispatch targets, review dispatch rules, dispatch mechanics, and the parallel-dispatch squad pattern |
+| [`pdca-loop`](.opencode/skills/pdca-loop/SKILL.md) | process | Deming PDCA loop: Plan Record → Run Log → Check Record → Knowledge Sync + Retrospective; cross-session Goal Records |
+| [`performance-investigation`](.opencode/skills/performance-investigation/SKILL.md) | process | Baseline → profile → hypothesize → measure → fix gate; no performance fix without a measurement |
+| [`incident-response`](.opencode/skills/incident-response/SKILL.md) | process | Production incidents: triage severity, mitigate first, preserve evidence, root cause, postmortem hook |
+| [`test-strategy`](.opencode/skills/test-strategy/SKILL.md) | process | Choose the right test level per change; characterization testing for legacy; flaky-test protocol |
 | [`retrospective`](.opencode/skills/retrospective/SKILL.md) | process | Extract process lessons and propose kit improvements after completed tasks |
 | [Superpowers](https://github.com/obra/superpowers) | process | PawBuilder & PatchPaw's engine: brainstorming → writing-plans → TDD → verification-before-completion |
 

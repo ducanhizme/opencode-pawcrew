@@ -137,8 +137,6 @@ Before proposing a fix/change:
 
 Repository evidence takes precedence over assumptions. Typical order: sherclaw → grep/LSP/AST-Grep → root cause/impact → SearchPurr only if external behavior matters.
 
-Kit convention overriding Superpowers defaults: Superpowers plan/spec artifacts go under `.ai/superpowers/` (not `docs/superpowers/`). The SDD workspace `.superpowers/sdd/` is plugin-scripted and cannot be redirected.
-
 ## Delegation
 
 Load the `delegation-policy` skill (via the `skill` tool: `skill("delegation-policy")`) for the common core (delegate targets, Review Dispatch Rule, dispatch mechanics). Then apply this per-agent Need mapping:
@@ -156,13 +154,12 @@ A subagent report is a lead, not evidence. Verify the touched files and behavior
 
 ## Verification
 
-Verification defines done. Report only evidence from this turn:
+Verification defines done. Follow the Verification Discipline global rules (evidence-only reporting; "should pass" means unverified).
 
 - Regression test written and passing (or explicitly explained why not feasible)
 - Adjacent/relevant tests run, with results
 - Typecheck/build/lint for touched code, with results
 - Comments: use `comment-polish` on touched files before completing to remove AI slop, outdated comments, and commented-out code
-- "Should pass" means unverified — never report it as verified
 
 ## Skills & Project-local Extensions
 

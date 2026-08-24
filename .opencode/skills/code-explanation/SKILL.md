@@ -1,6 +1,6 @@
 ---
 name: code-explanation
-description: Procedure for turning codebase evidence into natural-language understanding. Six modes (Summarize, Narrate, Trace, Map, Diagnose, Compare), evidence-gathering dispatch rules, diagram deliverables via the external diagram-design skill with mermaid fallback, and the limited-write documentation contract. Loaded by Pawfessor for any explanation, walkthrough, trace, diff explanation, or documentation-generation request.
+description: Procedure for turning codebase evidence into natural-language understanding. Seven modes (Summarize, Narrate, Trace, Map, Diagnose, Compare, Black-box), evidence-gathering dispatch rules, diagram deliverables via the external diagram-design skill with mermaid fallback, and the limited-write documentation contract. Loaded by Pawfessor for any explanation, walkthrough, trace, diff explanation, reverse-engineering-without-source, or documentation-generation request.
 ---
 
 # Code Explanation
@@ -21,6 +21,7 @@ Pick exactly one mode before doing anything else:
 | "what calls what", "dependencies", "where does data flow", "architecture of" | **Map** |
 | "why does this bug happen", "explain this race/N+1/injection", "why is this slow" | **Diagnose** |
 | "explain this diff", "what changed between", "compare these two implementations" | **Compare** |
+| "no source available", "clone this behavior", "reverse-engineer", "what does this service/API do from the outside" | **Black-box** |
 
 If the request also asks to *save* the explanation as markdown (with or
 without a diagram), this becomes a **deliverable** — see Diagram Deliverable
@@ -114,6 +115,35 @@ Explain differences between two implementations or a diff:
 2. For diffs: what changed, what stayed, and the behavioral impact of each
    hunk — not a line-by-line recital.
 3. State which differences are semantic and which are cosmetic.
+
+### Black-box
+
+Extract a behavior specification without source access (third-party service,
+closed library, legacy binary, partner API). Evidence comes from probing and
+artifacts, not from reading code:
+
+1. **Enumerate the observable surface**: endpoints/CLI flags/UI actions, input
+   formats, output formats, error shapes, headers/status codes. Sources:
+   official docs (dispatch searchpurr), captured traffic, SDK type
+   definitions, OpenAPI/schema files if published.
+2. **Probe systematically**: for each surface item, vary one input dimension
+   at a time (valid → boundary → invalid → adversarial) and record the
+   observed response. Keep a probe log: input → output → timestamp.
+   Respect rate limits and never probe with destructive or production-mutating
+   inputs without explicit user approval.
+3. **Extract the behavior spec**: state each discovered rule as
+   `WHEN <input/condition> THEN <observed behavior> [confidence]`. Mark rules
+   `OBSERVED` (seen in ≥2 probes or documented), `INFERRED` (single probe or
+   docs-only), or `UNTESTED`.
+4. **Identify the unknowns explicitly**: version drift, undocumented options,
+   and stateful behavior (caching, idempotency, ordering) are the usual gaps.
+   List each with the probe that would resolve it.
+5. **Deliverable**: the behavior spec is the artifact. If the goal is cloning
+   the behavior, route implementation to PawBuilder with the spec as input —
+   Pawfessor does not implement.
+
+Black-box claims never get `VERIFIED` confidence — source was not read. The
+strongest available label is `OBSERVED`.
 
 ## Cross-cutting rules (all modes)
 

@@ -92,11 +92,11 @@ After every write, run `git diff` and confirm each changed line is a doc comment
 
 ## Verification
 
+Follow the Verification Discipline global rules (evidence-only reporting; "should pass" means unverified).
+
 - Chat explanations: every substantive claim carries a confidence label (`VERIFIED` / `INFERRED` / `PREDICTED`) and an anchor; test coverage was checked before asserting behavior.
 - Documentation writes: `git diff` shows comment/doc-only changes.
 - Diagram deliverables: files exist under `docs/explanations/`, the markdown renders, and the diagram link resolves.
-
-Report only evidence from this turn. "Should be" means unverified.
 
 ## Communication
 

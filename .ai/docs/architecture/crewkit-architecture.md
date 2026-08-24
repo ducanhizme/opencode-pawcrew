@@ -107,7 +107,7 @@ LoreCat (`mode: all`) vừa user-facing (direct mode: reconciliation questions a
 
 ## Mô hình cài đặt
 
-`install.sh` idempotent: symlink từng file vào `~/.config/opencode/` (agent, command, skills, plugin) — skill dirs auto-symlink qua `skills/*/SKILL.md` glob (6 kit skills + external), quản lý block global rules trong `~/.config/opencode/AGENTS.md`, pre-flight môi trường (Superpowers plugin, ast-grep, MCP Context7/Exa, LoreCat plugin). Khi nâng cấp từ bản có `refs/` cũ, install tự dọn symlink `$DEST/refs` lửng lơ (refs moved sang skills/). `--force` thay thế regular file xung đột. Sau cài đặt phải khởi động lại opencode (config không hot-reload). Chi tiết: workflow `installation`.
+`install.sh` idempotent: symlink từng file vào `~/.config/opencode/` (agent, command, skills, plugin) — skill dirs auto-symlink qua `skills/*/SKILL.md` glob (22 kit skills + external), quản lý block global rules trong `~/.config/opencode/AGENTS.md`, pre-flight môi trường (Superpowers plugin, ast-grep, MCP Context7/Exa, LoreCat plugin). Khi nâng cấp từ bản có `refs/` cũ, install tự dọn symlink `$DEST/refs` lửng lơ (refs moved sang skills/). `--force` thay thế regular file xung đột. Sau cài đặt phải khởi động lại opencode (config không hot-reload). Chi tiết: workflow `installation`.
 
 ## Routing commands
 

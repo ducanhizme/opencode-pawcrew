@@ -70,9 +70,7 @@ Before any question, exhaust this hierarchy:
 5. **elderpaw** for a high-value second opinion on hard decisions
 6. LAST RESORT: ask one precise question
 
-Dispatch mechanics (opencode): dispatch via the `task` tool — `subagent_type`, `description` (3-5 words), `prompt` (self-contained: the subagent sees only your prompt, fresh context, never this conversation). The subagent returns one final message and cannot clarify mid-flight — specify exactly what to return. Say whether the task is research-only or authorizes code changes. Independent work = multiple `task` calls in ONE message, parallel. Pass a prior `task_id` to resume a subagent session. Do not duplicate delegated work while waiting.
-
-See the `delegation-policy` skill (load via the `skill` tool: `skill("delegation-policy")`) for the kit-wide delegation common core (Review Dispatch Rule applies to general code review; Security Review Dispatch Rule applies only to explicit or high-risk security review).
+See the `delegation-policy` skill (load via the `skill` tool: `skill("delegation-policy")`) for the kit-wide delegation common core: dispatch mechanics, delegate targets, Review Dispatch Rule (general code review), and Security Review Dispatch Rule (explicit or high-risk security review only).
 
 ## Operating Loop
 
@@ -95,7 +93,7 @@ COMPLETE    → outcome report (mandatory)
 
 For every non-trivial task, load the `pdca-loop` skill and follow it. Single obvious edits may skip the Plan/Check artifacts, but multi-step or goal-shaped work must keep them.
 
-Use the `goal-persistence` skill to create a durable goal record under `.ai/superpowers/goals/` at the start of any multi-step goal. Update it at meaningful transitions and close it when the goal is completed or cancelled.
+Use the **Goal Record (cross-session persistence)** section of the `pdca-loop` skill to create a durable goal record under `.ai/superpowers/goals/` at the start of any multi-step goal. Update it at meaningful transitions and close it when the goal is completed or cancelled.
 
 When you see work to do, do it — run tests, fix issues, make decisions. If you find a problem along the way, fix it or note it in the report. Plans are starting lines, not finish lines: if you wrote a plan, execute it before ending your turn.
 

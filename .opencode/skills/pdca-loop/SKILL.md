@@ -1,6 +1,6 @@
 ---
 name: pdca-loop
-description: Deming PDCA loop for OpenCode CrewKit. Use when starting any non-trivial task to produce a Plan Record, execute with a Run Log, verify against the Plan with a Check Record, and close the loop via Knowledge Sync + optional Retrospective. Loaded by PawBuilder, PatchPaw, and LetMeowCook.
+description: Deming PDCA loop for OpenCode CrewKit. Use when starting any non-trivial task to produce a Plan Record, execute with a Run Log, verify against the Plan with a Check Record, and close the loop via Knowledge Sync + optional Retrospective. Also covers Goal Records for cross-session persistence of multi-step goals. Loaded by PawBuilder, PatchPaw, and LetMeowCook.
 ---
 
 # PDCA Loop
@@ -17,6 +17,7 @@ Use this skill for any task that is not a single obvious edit. It creates durabl
 | **Run Log** | Do | `.ai/superpowers/runs/YYYY-MM-DD-<task-slug>.md` | Decisions, deviations, sources consulted, files touched |
 | **Check Record** | Check | `.ai/superpowers/checks/YYYY-MM-DD-<task-slug>.md` | Expected-vs-actual per success criterion, residual risk |
 | **Retrospective Note** | Act | `.ai/docs/references/lessons-learned.md` or `.ai/superpowers/improvements/` | Process lessons and proposed kit improvements |
+| **Goal Record** | cross-session | `.ai/superpowers/goals/YYYY-MM-DD-<goal-slug>.md` | Durable multi-step goal state for resume across sessions |
 
 Only the **Plan Record** is required for every PDCA task. Run Log and Check Record are strongly recommended for multi-step work. Retrospective Note is created only when a genuine process lesson is identified.
 
@@ -182,3 +183,60 @@ Use the `retrospective` skill to produce it. Store it under:
 - Do not skip Check by merging it into Outcome Report. They are separate artifacts with different audiences.
 - No Retrospective Note for one-off incidents. Only record lessons that are likely to recur or change how the kit works.
 - All artifacts must use frontmatter `type` and `x_wikiguy` consistent with OKF.
+
+## Goal Record (cross-session persistence)
+
+A Goal Record is a lightweight, durable record of an active multi-step goal.
+It exists so a later session can resume without re-deriving state. It is
+**not** a Plan Record: a Goal Record tracks *where the goal is*, while a Plan
+Record tracks *how one task will be executed*. A long-lived goal may have one
+Goal Record and several Plan Records over time.
+
+Create a Goal Record at the start of any multi-step goal that may span
+sessions (migrations, upgrade campaigns, multi-PR features). Use the CLI
+helper when available:
+
+```bash
+node scripts/goal-persistence.js create "Goal title" "Objective one-liner"
+node scripts/goal-persistence.js list      # active goals
+node scripts/goal-persistence.js latest    # most recent active goal
+node scripts/goal-persistence.js close <slug> [completed|cancelled]
+```
+
+Frontmatter and body:
+
+```yaml
+---
+type: Goal
+title: <concise goal>
+status: active|completed|cancelled
+agent: pawbuilder|patchpaw|letmeowcook
+created: YYYY-MM-DD
+x_wikiguy:
+  knowledge_kind: Goal
+  authority: descriptive
+---
+```
+
+```markdown
+## Objective
+<one-liner outcome>
+
+## Success criteria
+- [ ] <observable criterion>
+
+## Current state
+<what is done, what remains, blockers>
+
+## Next steps
+1. <next concrete step>
+
+## History
+- YYYY-MM-DD: <transition>
+```
+
+Rules:
+
+- Update the Goal Record at meaningful transitions (phase done, blocker hit, scope change) — not after every edit.
+- Close it (`completed` or `cancelled`) when the goal ends; never leave a finished goal marked `active`.
+- On session start, if the task looks like a continuation, check for an active Goal Record before re-planning.

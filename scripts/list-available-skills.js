@@ -4,9 +4,9 @@
 // Searches project-local, global user, and plugin-shipped skill directories.
 // Usage: node scripts/list-available-skills.js [project-root]
 
-const fs = require("node:fs")
-const path = require("node:path")
-const os = require("node:os")
+import fs from "node:fs"
+import path from "node:path"
+import os from "node:os"
 
 const projectRoot = path.resolve(process.argv[2] || process.cwd())
 const home = os.homedir()

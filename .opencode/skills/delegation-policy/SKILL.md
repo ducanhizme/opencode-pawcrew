@@ -1,6 +1,6 @@
 ---
 name: delegation-policy
-description: Kit delegation common core — canonical subagent dispatch targets (sherclaw/lorecat/searchpurr/elderpaw/judgewhiskers/guardclaw), review dispatch rules, and dispatch mechanics. Use when delegating investigation, research, general review, or focused security review from a primary agent (PatchPaw/PawBuilder/LetMeowCook). Loads the common-core delegation procedure shared across the kit.
+description: Kit delegation common core — canonical subagent dispatch targets (sherclaw/lorecat/searchpurr/elderpaw/judgewhiskers/guardclaw), review dispatch rules, dispatch mechanics, and the parallel-dispatch (squad) pattern. Use when delegating investigation, research, general review, or focused security review from a primary agent (PatchPaw/PawBuilder/LetMeowCook). Loads the common-core delegation procedure shared across the kit.
 ---
 
 # Delegation — Kit Common Core
@@ -45,3 +45,52 @@ Dispatch via the `task` tool: `subagent_type` (agent name), `description` (3-5 w
 - **Resume**: pass the prior `task_id` to continue the same subagent session with its context intact.
 
 A subagent report is a lead, not evidence. Verify the touched files and behavior yourself.
+
+## Parallel dispatch (squad pattern)
+
+Use when a task has two or more independent investigation dimensions and
+combining them serially would waste time: multi-domain features, performance
+or security-sensitive changes, large refactors, design decisions needing
+architecture + dependency + risk angles.
+
+Composition — pick 2–3 members, never all four for trivial work:
+
+| Member | Responsibility |
+|---|---|
+| **Sherclaw** | Existing patterns, consumers, tests, file locations |
+| **SearchPurr** | Official docs, upstream examples, external prior art |
+| **ElderPaw** | Architecture trade-offs, risk analysis, decision recommendation |
+| **LoreCat** | Project truth check — specs, ADRs, accepted constraints |
+
+Protocol:
+
+1. State the goal in one sentence.
+2. Assign each member a single, bounded question with observable output.
+3. Run `task` calls in parallel (one message, multiple calls).
+4. Wait for all reports before synthesizing.
+5. Synthesize into: current state, options, recommended path, open questions.
+6. Present to the user for approval on material decisions.
+
+Dispatch prompts follow the six-section structure (TASK, EXPECTED OUTCOME,
+REQUIRED TOOLS, MUST DO, MUST NOT DO, CONTEXT). Example for Sherclaw:
+
+```markdown
+TASK: Inventory how the project currently handles authentication middleware.
+
+EXPECTED OUTCOME: List files, functions, tests, and consumers. Identify the contract between middleware and route handlers.
+
+REQUIRED TOOLS: read, grep, LSP, ast-grep.
+
+MUST DO: Provide absolute file paths. Quote relevant code snippets.
+MUST NOT DO: Edit code, propose changes, or spawn subagents.
+
+CONTEXT: We are considering adding role-based access control.
+```
+
+Rules:
+
+1. Never dispatch without a one-sentence goal and bounded questions — vague squads waste tokens.
+2. Do not chain squads. A subagent cannot spawn another agent (`task: deny`).
+3. A subagent report is a lead, not evidence. Verify claims against the repository before acting.
+4. The squad is for investigation, not implementation. Implementation still follows the approved flow.
+5. Time-box: if a subagent takes too long, proceed with partial findings and say so.

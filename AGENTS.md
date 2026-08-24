@@ -3,10 +3,14 @@
 A minimal, native-first agent system for OpenCode: six primary agents
 (PawBuilder, PatchPaw, LetMeowCook, PawPixel, LoreCat, Pawfessor), five
 intelligence subagents (Sherclaw, SearchPurr, ElderPaw, JudgeWhiskers,
-GuardClaw), ten custom skills
+GuardClaw), twenty-two custom skills
 (`ast-grep`, `bug-flow`, `change-impact-analysis`, `change-request-flow`,
-`code-explanation`, `contract-regression-testing`, `crewkit-skill-registry`,
-`delegation-policy`, `pdca-loop`, `retrospective`),
+`code-explanation`, `comment-polish`, `contract-regression-testing`,
+`crewkit-skill-registry`, `delegation-policy`, `design-md-contract`,
+`frontend-audit`, `frontend-critique`, `frontend-delight`, `frontend-polish`,
+`frontend-taste-router`, `frontend-ui-engineering`, `hashline-edit`,
+`incident-response`, `pdca-loop`, `performance-investigation`,
+`retrospective`, `test-strategy`),
 six routing commands (`/build`, `/patch`, `/cook`, `/design`, `/explain`,
 `/lore-cat-save-it`), and four deterministic plugins (`frontend-guardian.ts`,
 `hashline.ts`, `lore-cat.ts`, `superpowers-gate.ts`).
@@ -47,16 +51,28 @@ per-file symlinks (run `./install.sh`).
 │   ├── lore-cat.ts         deterministic knowledge tools (wiki_search/read/freshness/save_concept/validate/sync)
 │   └── superpowers-gate.ts strips superpowers bootstrap from non-superpowers agents (strip-list, allow-by-default)
 └── skills/
- ├── ast-grep/SKILL.md
- ├── bug-flow/SKILL.md
- ├── change-impact-analysis/SKILL.md
- ├── change-request-flow/SKILL.md
- ├── code-explanation/SKILL.md
- ├── contract-regression-testing/SKILL.md
- ├── crewkit-skill-registry/SKILL.md
- ├── delegation-policy/SKILL.md
- ├── pdca-loop/SKILL.md
- └── retrospective/SKILL.md
+    ├── ast-grep/SKILL.md
+    ├── bug-flow/SKILL.md
+    ├── change-impact-analysis/SKILL.md
+    ├── change-request-flow/SKILL.md
+    ├── code-explanation/SKILL.md
+    ├── comment-polish/SKILL.md
+    ├── contract-regression-testing/SKILL.md
+    ├── crewkit-skill-registry/SKILL.md
+    ├── delegation-policy/SKILL.md        (includes the parallel-dispatch squad pattern)
+    ├── design-md-contract/SKILL.md
+    ├── frontend-audit/SKILL.md
+    ├── frontend-critique/SKILL.md
+    ├── frontend-delight/SKILL.md
+    ├── frontend-polish/SKILL.md
+    ├── frontend-taste-router/SKILL.md
+    ├── frontend-ui-engineering/SKILL.md
+    ├── hashline-edit/SKILL.md
+    ├── incident-response/SKILL.md
+    ├── pdca-loop/SKILL.md                (includes cross-session Goal Records)
+    ├── performance-investigation/SKILL.md
+    ├── retrospective/SKILL.md
+    └── test-strategy/SKILL.md
 ```
 
 Native `build` and `plan` are disabled via stub files (`disable: true`). With `build`
@@ -104,6 +120,51 @@ skill when installed, with an embedded-mermaid fallback.
 - **Repository specifics** = project's own AGENTS.md, never these prompts
 
 Never duplicate the same workflow in an agent prompt and a skill or command.
+
+## Disambiguation (ambiguous task → agent)
+
+When a request could plausibly route to more than one primary agent, apply the
+matching rule instead of guessing:
+
+| Ambiguous task | Rule |
+|---|---|
+| Refactor | bounded + behavior-preserving → PatchPaw · has design choices → PawBuilder · repetitive multi-file campaign → LetMeowCook |
+| Technical debt | single module → PatchPaw · repo-wide → LetMeowCook with a Goal Record |
+| Writing docs | explaining code → Pawfessor · project truth / specs / ADRs → LoreCat |
+| Tests | tests for a new feature → PawBuilder · failing/flaky tests → PatchPaw · building out a test suite as a goal → LetMeowCook |
+| Security | explaining a vulnerability → Pawfessor · reviewing a diff → GuardClaw (dispatched via the primary) · fixing → PatchPaw |
+| Performance | investigation/fix → PatchPaw + `performance-investigation` · repo-wide optimization campaign → LetMeowCook |
+| Production incident | active outage/errors → PatchPaw + `incident-response` (mitigate first) |
+| No source available | understanding behavior → Pawfessor (Black-box mode) · cloning it → PawBuilder with the extracted behavior spec |
+
+Routing invariants:
+
+- Every task has exactly **one primary agent**; supporting agents are subagents only.
+- Primary→primary handoff is an explicit route suggestion to the user ("this belongs to PatchPaw — switch?"), never a silent relay. Documented exception: LoreCat knowledge sync as a phase of the running primary.
+- New case that fits no row: apply the decision tree below before creating anything.
+
+```text
+New case appears
+│
+├─ Existing agent + skills handle it?
+│    └─ YES → create nothing (add a Rule if a constraint is needed)
+│
+├─ Difference is only step order / trigger?
+│    └─ Workflow: add a section to the existing skill/prompt
+│
+├─ Reusable reasoning procedure + own output contract
+│  + called from ≥2 places?
+│    └─ New skill
+│
+├─ Difference is only a constraint?
+│    └─ Rule (prompt / GLOBAL-RULES / contract artifact)
+│
+└─ New agent? Only when ALL of these hold:
+     1. A NEW authority boundary or permission envelope
+     2. Cannot be expressed as Skill + Workflow on an existing agent
+     3. ≥3 foreseeable use cases in the next 3 months
+   Missing any condition → go back up the tree.
+```
 
 ## Tooling Layer
 
@@ -187,6 +248,11 @@ Artifacts live under `.ai/superpowers/plans/`, `.ai/superpowers/runs/`,
 `.ai/superpowers/checks/`, and `.ai/superpowers/improvements/`. The
 `retrospective` skill produces lessons-learned entries for `.ai/docs/references/`
 or proposed kit improvements.
+
+Multi-step goals that may span sessions get a **Goal Record** under
+`.ai/superpowers/goals/` (cross-session persistence section of `pdca-loop`;
+CLI helper: `node scripts/goal-persistence.js`). A Goal Record tracks where
+the goal is; a Plan Record tracks how one task executes.
 
 ## Editing conventions
 
