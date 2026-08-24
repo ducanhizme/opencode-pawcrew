@@ -368,31 +368,65 @@ a hard block on `sg --update-all` (no rewrites from a read-only investigator).
 
 ## Skills
 
-| Skill | Type | Purpose |
+Skills are reusable procedures; they do not replace agent authority, routing commands, or LoreCat's ownership of durable project knowledge. Agent prompts decide **who owns a decision**; a skill defines **how that owner performs a repeatable procedure**. The linked `SKILL.md` is the executable source of truth.
+
+### Discovery, evidence, and project truth
+
+| Skill | Use it when | Output and boundary |
 |---|---|---|
-| [`ast-grep`](.opencode/skills/ast-grep/SKILL.md) | domain | Structural search & safe rewrite via `sg`; falls back to grep+LSP when the binary is missing — and never fakes a structural search |
-| [`frontend-ui-engineering`](.opencode/skills/frontend-ui-engineering/SKILL.md) | domain | Production-grade UI engineering: component architecture, responsive, accessibility, state, anti-AI-aesthetic verification |
-| [`frontend-taste-router`](.opencode/skills/frontend-taste-router/SKILL.md) | domain | Maps a frontend brief to the right taste skill: design-taste-frontend, high-end-visual-design, minimalist-ui, gpt-taste, industrial-brutalist-ui |
-| [`design-md-contract`](.opencode/skills/design-md-contract/SKILL.md) | domain | Maintain DESIGN.md as the closed token layer and single source of truth for the project's UI system |
-| [`frontend-audit`](.opencode/skills/frontend-audit/SKILL.md) | domain | Measurable a11y, performance, responsive, theming, and anti-pattern checks with P0-P3 severity |
-| [`frontend-critique`](.opencode/skills/frontend-critique/SKILL.md) | domain | UX and design critique across hierarchy, IA, cognitive load, and brand fit |
-| [`frontend-polish`](.opencode/skills/frontend-polish/SKILL.md) | domain | Final consistency and micro-detail pass before shipping UI |
-| [`frontend-delight`](.opencode/skills/frontend-delight/SKILL.md) | domain | Tasteful motion and personality once fundamentals are solid |
-| [`hashline-edit`](.opencode/skills/hashline-edit/SKILL.md) | domain | Surgical hash-anchored file edits (`LINE#ID`) to avoid stale-line errors and silent corruption |
-| [`comment-polish`](.opencode/skills/comment-polish/SKILL.md) | domain | Audit and clean comments: remove AI slop, outdated notes, commented-out code; preserve intent and API docs |
-| [`change-impact-analysis`](.opencode/skills/change-impact-analysis/SKILL.md) | analysis | Change contract without touching code: current → requested → delta → dependencies → risks → verification plan |
-| [`contract-regression-testing`](.opencode/skills/contract-regression-testing/SKILL.md) | analysis | API/schema/event/serialization/config/CLI compatibility matrix and concrete regression checks before approval, incl. data-migration phases (dual-write, backfill, mixed-version, rollback, cutover) |
-| [`bug-flow`](.opencode/skills/bug-flow/SKILL.md) | process | Root-cause-first fix procedure with pre-approval contract and post-approval TDD |
-| [`change-request-flow`](.opencode/skills/change-request-flow/SKILL.md) | process | Impact-analysis-first procedure for bounded behavior/API changes with mandatory knowledge sync |
-| [`code-explanation`](.opencode/skills/code-explanation/SKILL.md) | domain | Pawfessor's procedure: seven explanation modes (incl. black-box reverse-engineering), evidence dispatch rules, diagram deliverables (diagram-design + mermaid fallback), limited-write doc contract |
-| [`crewkit-skill-registry`](.opencode/skills/crewkit-skill-registry/SKILL.md) | tooling | Discover all available skills: project-local, global user, plugin-shipped, and kit skills |
-| [`delegation-policy`](.opencode/skills/delegation-policy/SKILL.md) | policy | Canonical subagent dispatch targets, review dispatch rules, dispatch mechanics, and the parallel-dispatch squad pattern |
-| [`pdca-loop`](.opencode/skills/pdca-loop/SKILL.md) | process | Deming PDCA loop: Plan Record → Run Log → Check Record → Knowledge Sync + Retrospective; cross-session Goal Records |
-| [`performance-investigation`](.opencode/skills/performance-investigation/SKILL.md) | process | Baseline → profile → hypothesize → measure → fix gate; no performance fix without a measurement |
-| [`incident-response`](.opencode/skills/incident-response/SKILL.md) | process | Production incidents: triage severity, mitigate first, preserve evidence, root cause, postmortem hook |
-| [`test-strategy`](.opencode/skills/test-strategy/SKILL.md) | process | Choose the right test level per change; characterization testing for legacy; flaky-test protocol |
-| [`retrospective`](.opencode/skills/retrospective/SKILL.md) | process | Extract process lessons and propose kit improvements after completed tasks |
-| [Superpowers](https://github.com/obra/superpowers) | process | PawBuilder & PatchPaw's engine: brainstorming → writing-plans → TDD → verification-before-completion |
+| [`crewkit-skill-registry`](.opencode/skills/crewkit-skill-registry/SKILL.md) | Starting non-trivial work or checking whether a project-local skill exists | Lists project, global, plugin, and kit skills. Project-local skills win on name conflicts. |
+| [`code-explanation`](.opencode/skills/code-explanation/SKILL.md) | You need a summary, trace, map, diagnosis, comparison, or black-box explanation | Pawfessor turns evidence into explanations and diagrams. It may write explanation docs/comments, never code logic. |
+| [`delegation-policy`](.opencode/skills/delegation-policy/SKILL.md) | A primary agent needs code truth, project truth, external facts, judgement, review, or security review | Defines the canonical targets: Sherclaw, LoreCat, SearchPurr, ElderPaw, JudgeWhiskers, GuardClaw. Reports are leads, not final evidence. |
+| [`codebase-design`](.opencode/skills/codebase-design/SKILL.md) | Mapping existing module boundaries, dependencies, flows, and contracts | Read-only architecture map from Sherclaw code truth and LoreCat project truth; labels conclusions as verified, inferred, or predicted. |
+| [`wayfinder`](.opencode/skills/wayfinder/SKILL.md) | Asking where a multi-step effort stands or what to do next | Read-only view of Goal, Plan, Run, and Check records: current goal, active plan, latest verification, gaps, and smallest next action. |
+| [`triage`](.opencode/skills/triage/SKILL.md) | Identifying blocked decisions, unverified criteria, or stale evidence | Read-only decision frontier. It never ranks a backlog, assigns work, creates tickets, or mutates record status. |
+
+### Design, ambiguity, and architecture decisions
+
+| Skill | Use it when | Output and boundary |
+|---|---|---|
+| [`clarification`](.opencode/skills/clarification/SKILL.md) | Two plausible interpretations produce different deliverables | States a safe default and asks one precise question; not for naming or implementation trivia. |
+| [`prototype`](.opencode/skills/prototype/SKILL.md) | Evidence and discussion cannot settle one approved design/state/UI question | A visibly throwaway experiment using in-memory data. It never becomes production code implicitly or creates PDCA records. |
+| [`domain-modeling`](.opencode/skills/domain-modeling/SKILL.md) | Terms are ambiguous, overloaded, contradictory, or recurring across code/docs | A Vocabulary Draft based on Sherclaw and LoreCat evidence. Accepted vocabulary goes through LoreCat, never direct `.ai/docs` writes. |
+| [`change-impact-analysis`](.opencode/skills/change-impact-analysis/SKILL.md) | Planning a bounded behavior/API change before approval | Current state → requested state → delta → consumers → risks → verification plan; analysis-only. |
+| [`contract-regression-testing`](.opencode/skills/contract-regression-testing/SKILL.md) | A change affects an API, schema, event, serialization, config, CLI, or migration | Compatibility matrix and concrete consumer regression cases, including mixed-version and rollback checks. |
+| [`improve-codebase-architecture`](.opencode/skills/improve-codebase-architecture/SKILL.md) | Evaluating a bounded architecture concern | Analysis-only report: symptoms, evidence, options, trade-offs, risks, smallest change, excluded scope, and verification. It cannot authorize edits. |
+
+### Delivery, reliability, and learning
+
+| Skill | Use it when | Output and boundary |
+|---|---|---|
+| [`pdca-loop`](.opencode/skills/pdca-loop/SKILL.md) | Any non-trivial PawBuilder/PatchPaw/LetMeowCook task | Durable Plan, Run, Check, and Act artifacts; Goal Records preserve multi-session objectives. |
+| [`bug-flow`](.opencode/skills/bug-flow/SKILL.md) | PatchPaw classifies the request as a bug | Root-cause-first investigation, approved minimal fix, regression test, and verification. |
+| [`change-request-flow`](.opencode/skills/change-request-flow/SKILL.md) | PatchPaw classifies a requested behavior change | Impact analysis, contract checks when needed, approval, implementation, verification, and mandatory knowledge sync. |
+| [`test-strategy`](.opencode/skills/test-strategy/SKILL.md) | Selecting test level or working in under-tested/legacy code | Unit/integration/E2E choice, characterization-test guidance, and flaky-test protocol. |
+| [`performance-investigation`](.opencode/skills/performance-investigation/SKILL.md) | Investigating latency, CPU, memory, startup, or query regressions | Measured baseline → profile → hypothesis → measurement → fix gate. No performance fix from intuition alone. |
+| [`incident-response`](.opencode/skills/incident-response/SKILL.md) | Handling an active production/staging outage, corruption, or security incident | Severity triage, mitigation first, evidence preservation, root cause, and retrospective handoff. |
+| [`retrospective`](.opencode/skills/retrospective/SKILL.md) | A completed task reveals a recurring workflow/process gap | A lesson and proposed kit improvement; it does not change code or policy without approval. |
+
+### Safe editing and source inspection
+
+| Skill | Use it when | Output and boundary |
+|---|---|---|
+| [`ast-grep`](.opencode/skills/ast-grep/SKILL.md) | Finding or rewriting code by syntax shape instead of text | Structural `sg` search/rewrite. If unavailable, falls back to grep/LSP and never pretends structural evidence exists. |
+| [`hashline-edit`](.opencode/skills/hashline-edit/SKILL.md) | Editing a file that may change between read and write | Hash-anchored `LINE#ID` edits prevent stale-line corruption; re-read if an anchor is stale. |
+| [`comment-polish`](.opencode/skills/comment-polish/SKILL.md) | Completing a non-trivial change or cleaning documentation comments | Removes stale/filler/commented-out code while preserving intent, workarounds, and accurate public API docs. |
+
+### Frontend and design-system work
+
+| Skill | Use it when | Output and boundary |
+|---|---|---|
+| [`design-md-contract`](.opencode/skills/design-md-contract/SKILL.md) | Significant UI/design-system work | Maintains `DESIGN.md` as the token, motion, responsive, and accessibility contract. |
+| [`frontend-ui-engineering`](.opencode/skills/frontend-ui-engineering/SKILL.md) | Building components, pages, layouts, or UI states | Accessible, responsive, production UI with state and anti-generic-aesthetic checks. |
+| [`frontend-taste-router`](.opencode/skills/frontend-taste-router/SKILL.md) | Selecting a visual direction for a frontend brief | Chooses one taste skill: design-taste, high-end, minimalist, gpt-taste, or industrial-brutalist. |
+| [`frontend-audit`](.opencode/skills/frontend-audit/SKILL.md) | Auditing UI quality | P0–P3 report across accessibility, performance, responsive behavior, theming, and anti-patterns. |
+| [`frontend-critique`](.opencode/skills/frontend-critique/SKILL.md) | Improving hierarchy, information architecture, cognitive load, or visual direction | Prioritized UX/design critique before or after implementation. |
+| [`frontend-polish`](.opencode/skills/frontend-polish/SKILL.md) | UI structure/functionality already work and need final refinement | Alignment, consistency, typography, spacing, and micro-detail pass. |
+| [`frontend-delight`](.opencode/skills/frontend-delight/SKILL.md) | Fundamentals are solid and the UI needs restrained personality | Accessible micro-interactions, transitions, and memorable moments without harming usability. |
+
+### Process engine and access rules
+
+[Superpowers](https://github.com/obra/superpowers) supplies PawBuilder and PatchPaw's process sequence: brainstorming → planning → TDD → verification-before-completion. LetMeowCook deliberately denies Superpowers process skills while retaining domain skills: autonomous execution is its contract. JudgeWhiskers has the inverse scope: default-deny skill access with only `requesting-code-review` and `receiving-code-review`, because it is the review gate.
 
 LetMeowCook deliberately **denies** Superpowers *process* skills (enforced via
 `permission.skill` patterns) while keeping domain skills — autonomy is the point;
